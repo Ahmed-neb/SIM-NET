@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Remote Desktop Connection - SIM-NET Network Management System">
+    <meta name="theme-color" content="#3b82f6">
+    <title data-i18n="page.title">Remote Desktop | SIM-NET</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="css/remote-desktop.css">
+</head>
+<body>
+    <!-- Background Animation -->
+    <div class="bg-animation" aria-hidden="true">
+        <div class="bg-grid"></div>
+        <div class="bg-glow"></div>
+    </div>
+
+    <div class="container">
+        <!-- Sidebar -->
+        <aside class="sidebar" role="navigation" aria-label="القائمة الرئيسية">
+            <header class="sidebar-header">
+                <div class="logo-icon">
+                    <i class="fas fa-network-wired" aria-hidden="true"></i>
+                </div>
+                <span class="logo-text">SIM-NET</span>
+            </header>
+
+            <nav class="sidebar-nav">
+                <ul role="menubar">
+                    <li role="none">
+                        <a href="index.html" class="nav-item" role="menuitem">
+                            <i class="fas fa-tachometer-alt" aria-hidden="true"></i>
+                            <span data-i18n="nav.dashboard">لوحة التحكم</span>
+                        </a>
+                    </li>
+                    <li role="none">
+                        <a href="remote-desktop.html" class="nav-item active" role="menuitem" aria-current="page">
+                            <i class="fas fa-desktop" aria-hidden="true"></i>
+                            <span data-i18n="nav.remoteDesktop">Remote Desktop</span>
+                        </a>
+                    </li>
+                    <li role="none">
+                        <a href="telnet-terminal.html" class="nav-item" role="menuitem">
+                            <i class="fas fa-terminal" aria-hidden="true"></i>
+                            <span data-i18n="nav.telnet">Telnet Terminal</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+
+            <footer class="sidebar-footer">
+                <div class="user-info">
+                    <div class="user-avatar">
+                        <i class="fas fa-user-circle" aria-hidden="true"></i>
+                    </div>
+                    <div class="user-details">
+                        <span class="user-name">Admin</span>
+                        <span class="user-role" data-i18n="user.role">مدير النظام</span>
+                    </div>
+                </div>
+            </footer>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="header">
+                <div class="header-title">
+                    <div class="status-indicator online" aria-hidden="true"></div>
+                    <h1 data-i18n="header.title">اتصال سطح المكتب البعيد (RDP)</h1>
+                </div>
+                <div class="header-actions">
+                    <!-- Language Switcher -->
+                    <button class="btn-icon language-switcher" id="languageSwitcher" aria-label="تغيير اللغة" title="تغيير اللغة">
+                        <i class="fas fa-globe" aria-hidden="true"></i>
+                        <span class="lang-code">AR</span>
+                    </button>
+                    <!-- Theme Toggle -->
+                    <button class="btn-icon theme-toggle" id="themeToggle" aria-label="تبديل الوضع" title="تبديل الوضع">
+                        <i class="fas fa-sun" aria-hidden="true"></i>
+                    </button>
+                    <button class="btn-icon" aria-label="المساعدة" title="المساعدة">
+                        <i class="fas fa-question-circle" aria-hidden="true"></i>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Content -->
+            <div class="content-wrapper">
+                <!-- Connection Panel -->
+                <section class="connection-panel" id="connectionPanel" aria-labelledby="panel-title">
+                    <div class="panel-header">
+                        <div class="panel-icon">
+                            <i class="fas fa-desktop" aria-hidden="true"></i>
+                        </div>
+                        <h2 id="panel-title" data-i18n="panel.title">إعدادات الاتصال RDP</h2>
+                        <p data-i18n="panel.subtitle">أدخل بيانات Windows Remote Desktop</p>
+                    </div>
+
+                    <form class="connection-form" id="rdpForm" novalidate>
+                        <!-- Host -->
+                        <div class="form-group">
+                            <label for="host">
+                                <i class="fas fa-computer" aria-hidden="true"></i>
+                                <span data-i18n="form.host.label">عنوان IP / Computer Name</span>
+                            </label>
+                            <div class="input-wrapper">
+                                <input
+                                    type="text"
+                                    id="host"
+                                    name="host"
+                                    placeholder="192.168.1.100 أو PC-Name"
+                                    data-i18n-placeholder="form.host.placeholder"
+                                    required
+                                    autocomplete="off"
+                                >
+                                <span class="input-icon"><i class="fas fa-desktop"></i></span>
+                            </div>
+                        </div>
+
+                        <!-- Port & Domain -->
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="port">
+                                    <i class="fas fa-plug" aria-hidden="true"></i>
+                                    <span data-i18n="form.port.label">المنفذ (Port)</span>
+                                </label>
+                                <div class="input-wrapper">
+                                    <input
+                                        type="number"
+                                        id="port"
+                                        name="port"
+                                        value="3389"
+                                        min="1"
+                                        max="65535"
+                                        placeholder="3389"
+                                    >
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="domain">
+                                    <i class="fas fa-globe" aria-hidden="true"></i>
+                                    <span data-i18n="form.domain.label">النطاق (Domain)</span>
+                                </label>
+                                <div class="input-wrapper">
+                                    <input
+                                        type="text"
+                                        id="domain"
+                                        name="domain"
+                                        placeholder="WORKGROUP"
+                                        data-i18n-placeholder="form.domain.placeholder"
+                                        value="WORKGROUP"
+                                    >
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Username -->
+                        <div class="form-group">
+                            <label for="username">
+                                <i class="fas fa-user" aria-hidden="true"></i>
+                                <span data-i18n="form.username.label">اسم المستخدم</span>
+                            </label>
+                            <div class="input-wrapper">
+                                <input
+                                    type="text"
+                                    id="username"
+                                    name="username"
+                                    placeholder="Administrator"
+                                    data-i18n-placeholder="form.username.placeholder"
+                                    required
+                                    autocomplete="username"
+                                >
+                                <span class="input-icon"><i class="fas fa-user"></i></span>
+                            </div>
+                        </div>
+
+                        <!-- Password -->
+                        <div class="form-group">
+                            <label for="password">
+                                <i class="fas fa-lock" aria-hidden="true"></i>
+                                <span data-i18n="form.password.label">كلمة المرور</span>
+                            </label>
+                            <div class="input-wrapper">
+                                <input
+                                    type="password"
+                                    id="password"
+                                    name="password"
+                                    placeholder="••••••••"
+                                    data-i18n-placeholder="form.password.placeholder"
+                                    required
+                                    autocomplete="current-password"
+                                >
+                                <button type="button" class="toggle-password" aria-label="إظهار/إخفاء كلمة المرور">
+                                    <i class="fas fa-eye" aria-hidden="true"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Options -->
+                        <div class="form-options">
+                            <label class="checkbox-wrapper">
+                                <input type="checkbox" id="ignoreCert" name="ignoreCert" checked>
+                                <span class="checkmark"></span>
+                                <span class="checkbox-label">
+                                    <i class="fas fa-certificate" aria-hidden="true"></i>
+                                    <span data-i18n="form.options.ignoreCert">تجاهل شهادة SSL (للاختبار)</span>
+                                </span>
+                            </label>
+                            <label class="checkbox-wrapper">
+                                <input type="checkbox" id="resize" name="resize" checked>
+                                <span class="checkmark"></span>
+                                <span class="checkbox-label">
+                                    <i class="fas fa-expand" aria-hidden="true"></i>
+                                    <span data-i18n="form.options.resize">تكبير تلقائي</span>
+                                </span>
+                            </label>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <button type="submit" class="btn-connect">
+                            <span class="btn-content">
+                                <i class="fas fa-plug" aria-hidden="true"></i>
+                                <span data-i18n="form.connect">بدء الاتصال</span>
+                            </span>
+                            <span class="btn-loading hidden">
+                                <i class="fas fa-spinner fa-spin" aria-hidden="true"></i>
+                                <span data-i18n="form.connecting">جاري الاتصال...</span>
+                            </span>
+                        </button>
+                    </form>
+
+                    <!-- Requirements Info -->
+                    <div class="info-box warning">
+                        <div class="info-header">
+                            <i class="fas fa-exclamation-triangle" aria-hidden="true"></i>
+                            <h3 data-i18n="requirements.title">متطلبات الاتصال</h3>
+                        </div>
+                        <ul class="requirements-list">
+                            <li>
+                                <i class="fas fa-check-circle" aria-hidden="true"></i>
+                                <span data-i18n="requirements.item1">يجب تفعيل <strong>Remote Desktop</strong> على الجهاز المستهدف</span>
+                            </li>
+                            <li>
+                                <i class="fas fa-check-circle" aria-hidden="true"></i>
+                                <span data-i18n="requirements.item2">يفتح منفذ <strong>3389</strong> في الجدار الناري</span>
+                            </li>
+                            <li>
+                                <i class="fas fa-check-circle" aria-hidden="true"></i>
+                                <span data-i18n="requirements.item3">صلاحيات المستخدم للوصول عن بُعد</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- RDP Note -->
+                    <div class="info-box info">
+                        <div class="info-header">
+                            <i class="fas fa-lightbulb" aria-hidden="true"></i>
+                            <h3 data-i18n="note.title">ملاحظة هامة</h3>
+                        </div>
+                        <p class="note-text" data-i18n="note.text">
+                            سيتم تحميل ملف <code>connection.rdp</code>. اضغط عليه مرتين لفتح
+                            <strong>برنامج Remote Desktop Connection</strong> الخاص بـ Windows
+                        </p>
+                    </div>
+                </section>
+
+                <!-- Desktop Viewer -->
+                <section class="desktop-viewer hidden" id="desktopViewer" aria-label="عارض سطح المكتب البعيد">
+                    <!-- Toolbar -->
+                    <div class="viewer-toolbar">
+                        <div class="toolbar-section left">
+                            <button class="toolbar-btn danger" id="disconnectBtn" title="قطع الاتصال">
+                                <i class="fas fa-power-off" aria-hidden="true"></i>
+                                <span data-i18n="viewer.disconnect">قطع الاتصال</span>
+                            </button>
+                            <button class="toolbar-btn" id="fullscreenBtn" title="ملء الشاشة">
+                                <i class="fas fa-expand" aria-hidden="true"></i>
+                                <span data-i18n="viewer.fullscreen">ملء الشاشة</span>
+                            </button>
+                        </div>
+
+                        <div class="toolbar-section center">
+                            <div class="connection-status" id="connectionStatus">
+                                <span class="status-dot connecting"></span>
+                                <span class="status-text" data-i18n="viewer.connecting">جاري الاتصال...</span>
+                            </div>
+                        </div>
+
+                        <div class="toolbar-section right">
+                            <button class="toolbar-btn" id="ctrlAltDelBtn" title="Ctrl+Alt+Del">
+                                <i class="fas fa-keyboard" aria-hidden="true"></i>
+                                <span>Ctrl+Alt+Del</span>
+                            </button>
+                            <button class="toolbar-btn" id="clipboardBtn" title="الحافظة">
+                                <i class="fas fa-clipboard" aria-hidden="true"></i>
+                                <span data-i18n="viewer.clipboard">الحافظة</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Screen Container -->
+                    <div class="screen-container" id="screenContainer">
+                        <div id="rdpDisplay" class="rdp-display" role="img" aria-label="شاشة سطح المكتب البعيد">
+                            <!-- RDP content will be loaded here -->
+                        </div>
+                        <div class="loading-overlay" id="loadingOverlay">
+                            <div class="loading-spinner"></div>
+                            <span data-i18n="viewer.loading">جاري الاتصال بالجهاز البعيد...</span>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <!-- Clipboard Modal -->
+    <div class="modal hidden" id="clipboardModal" role="dialog" aria-labelledby="clipboard-title" aria-modal="true">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="clipboard-title">
+                    <i class="fas fa-clipboard" aria-hidden="true"></i>
+                    <span data-i18n="clipboard.title">الحافظة</span>
+                </h3>
+                <button class="btn-close" id="closeClipboard" aria-label="إغلاق">
+                    <i class="fas fa-times" aria-hidden="true"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <textarea
+                    id="clipboardText"
+                    placeholder="الصق النص هنا..."
+                    data-i18n-placeholder="clipboard.placeholder"
+                    rows="6"
+                    aria-label="محتوى الحافظة"
+                ></textarea>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" id="clearClipboard" data-i18n="clipboard.clear">مسح</button>
+                <button class="btn-primary" id="sendClipboard">
+                    <i class="fas fa-paper-plane" aria-hidden="true"></i>
+                    <span data-i18n="clipboard.send">إرسال للخادم</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div id="toast-container" class="toast-container" aria-live="polite" aria-atomic="true"></div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@novnc/novnc@1.4.0/core/rfb.min.js"></script>
+    <script src="js/remote-desktop.js" defer></script>
+</body>
+</html>

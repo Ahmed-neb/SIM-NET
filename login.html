@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIM-NET - Login</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #f1f5f9;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Static Background Image */
+        .bg-image {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-image: url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1920&q=80');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            opacity: 0.15;
+            z-index: 0;
+        }
+
+        /* Light Overlay */
+        .bg-overlay {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(241, 245, 249, 0.95) 0%, rgba(226, 232, 240, 0.9) 100%);
+            z-index: 1;
+        }
+
+        /* Login Container */
+        .login-container {
+            position: relative;
+            z-index: 2;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            border: 1px solid rgba(37, 99, 235, 0.2);
+            padding: 60px 40px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1), 0 0 30px rgba(37, 99, 235, 0.05);
+            animation: slideUp 0.8s ease-out;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Logo */
+        .logo {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .logo-icon {
+            width: 80px;
+            height: 80px;
+            background: transparent;
+            border: 3px solid #2563eb;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            position: relative;
+            animation: pulse 2s infinite;
+        }
+
+        .logo-icon::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border: 2px solid rgba(37, 99, 235, 0.2);
+            border-radius: 50%;
+            animation: ripple 2s infinite;
+        }
+
+        @keyframes ripple {
+            0% { transform: scale(1); opacity: 1; }
+            100% { transform: scale(1.5); opacity: 0; }
+        }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 20px rgba(37, 99, 235, 0.2); }
+            50% { box-shadow: 0 0 40px rgba(37, 99, 235, 0.4); }
+        }
+
+        .logo-icon svg {
+            width: 40px;
+            height: 40px;
+            fill: #2563eb;
+        }
+
+        .logo h1 {
+            color: #1e293b;
+            font-size: 32px;
+            font-weight: 700;
+            letter-spacing: 3px;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+
+        .logo p {
+            color: #64748b;
+            font-size: 14px;
+        }
+
+        /* Input Fields */
+        .input-group {
+            position: relative;
+            margin-bottom: 30px;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 15px 20px;
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px solid rgba(37, 99, 235, 0.2);
+            border-radius: 10px;
+            color: #1e293b;
+            font-size: 16px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .input-group input:focus {
+            border-color: #2563eb;
+            background: rgba(255, 255, 255, 1);
+            box-shadow: 0 0 20px rgba(37, 99, 235, 0.15);
+        }
+
+        .input-group label {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #64748b;
+            font-size: 16px;
+            pointer-events: none;
+            transition: all 0.3s ease;
+        }
+
+        .input-group input:focus ~ label,
+        .input-group input:not(:placeholder-shown) ~ label {
+            top: -10px;
+            left: 15px;
+            font-size: 12px;
+            color: #2563eb;
+            background: #fff;
+            padding: 0 5px;
+            border-radius: 4px;
+        }
+
+        .input-group i {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #2563eb;
+            font-size: 18px;
+        }
+
+        /* Login Button */
+        .login-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(90deg, #2563eb, #1d4ed8);
+            border: none;
+            border-radius: 10px;
+            color: #fff;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(37, 99, 235, 0.3);
+        }
+
+        .login-btn:active {
+            transform: translateY(0);
+        }
+
+        .login-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: 0.5s;
+        }
+
+        .login-btn:hover::before {
+            left: 100%;
+        }
+
+        /* Error Message */
+        .error-message {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #dc2626;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 14px;
+            display: none;
+            animation: shake 0.5s;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        /* Remember Me & Forgot Password */
+        .remember-forgot {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            color: #64748b;
+            font-size: 14px;
+        }
+
+        .remember-me {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+
+        .remember-me input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: #2563eb;
+            cursor: pointer;
+        }
+
+        .forgot-password {
+            color: #2563eb;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .forgot-password:hover {
+            color: #1d4ed8;
+            text-decoration: underline;
+        }
+
+        /* Loading Spinner */
+        .loading {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Glow Effect */
+        .glow {
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(37, 99, 235, 0.08) 0%, transparent 70%);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1;
+            animation: rotate 20s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: translate(-50%, -50%) rotate(0deg); }
+            to { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        /* Mobile Version */
+        @media (max-width: 480px) {
+            .login-container {
+                padding: 40px 30px;
+                margin: 20px;
+            }
+
+            .logo h1 {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Static Background Image -->
+    <div class="bg-image"></div>
+
+    <!-- Light Overlay -->
+    <div class="bg-overlay"></div>
+
+    <!-- Glow Effect -->
+    <div class="glow"></div>
+
+    <!-- Login Container -->
+    <div class="login-container">
+        <div class="logo">
+            <div class="logo-icon">
+                <svg viewBox="0 0 24 24">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>
+                </svg>
+            </div>
+            <h1>SIM-NET</h1>
+            <p>Smart Network Management System</p>
+        </div>
+
+        <div class="error-message" id="errorMsg">
+            Incorrect username or password
+        </div>
+
+        <form id="loginForm">
+            <div class="input-group">
+                <input type="text" id="username" placeholder=" " required autocomplete="off">
+                <label>Username</label>
+            </div>
+
+            <div class="input-group">
+                <input type="password" id="password" placeholder=" " required>
+                <label>Password</label>
+            </div>
+
+            <div class="remember-forgot">
+                <label class="remember-me">
+                    <input type="checkbox" id="rememberMe">
+                    <span>Remember me</span>
+                </label>
+                <a href="#" class="forgot-password">Forgot password?</a>
+            </div>
+
+            <button type="submit" class="login-btn" id="loginBtn">
+                <span id="btnText">Login</span>
+                <div class="loading" id="loading"></div>
+            </button>
+        </form>
+    </div>
+
+    <script>
+        // Default login credentials
+        const VALID_USERNAME = 'admin';
+        const VALID_PASSWORD = 'root';
+
+        // DOM elements
+        const loginForm = document.getElementById('loginForm');
+        const usernameInput = document.getElementById('username');
+        const passwordInput = document.getElementById('password');
+        const errorMsg = document.getElementById('errorMsg');
+        const loginBtn = document.getElementById('loginBtn');
+        const btnText = document.getElementById('btnText');
+        const loading = document.getElementById('loading');
+        const rememberMe = document.getElementById('rememberMe');
+
+        // Check for saved data
+        window.addEventListener('load', () => {
+            const savedUser = localStorage.getItem('simnet_username');
+            const savedPass = localStorage.getItem('simnet_password');
+            const isRemembered = localStorage.getItem('simnet_remember') === 'true';
+
+            if (isRemembered && savedUser && savedPass) {
+                usernameInput.value = savedUser;
+                passwordInput.value = savedPass;
+                rememberMe.checked = true;
+            }
+        });
+
+        // Handle login
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const username = usernameInput.value.trim();
+            const password = passwordInput.value.trim();
+
+            // Hide previous error message
+            errorMsg.style.display = 'none';
+
+            // Check for empty fields
+            if (!username || !password) {
+                showError('Please enter username and password');
+                return;
+            }
+
+            // Show loading state
+            setLoading(true);
+
+            // Simulate network delay
+            await new Promise(resolve => setTimeout(resolve, 1000));
+
+            // Verify credentials
+            if (username === VALID_USERNAME && password === VALID_PASSWORD) {
+                // Save data if "Remember me" is checked
+                if (rememberMe.checked) {
+                    localStorage.setItem('simnet_username', username);
+                    localStorage.setItem('simnet_password', password);
+                    localStorage.setItem('simnet_remember', 'true');
+                } else {
+                    localStorage.removeItem('simnet_username');
+                    localStorage.removeItem('simnet_password');
+                    localStorage.setItem('simnet_remember', 'false');
+                }
+
+                // Redirect to loading page
+                window.location.href = 'index.html';
+
+            } else {
+                setLoading(false);
+                showError('Invalid username or password');
+
+                // Shake effect on fields
+                usernameInput.style.borderColor = '#ef4444';
+                passwordInput.style.borderColor = '#ef4444';
+
+                setTimeout(() => {
+                    usernameInput.style.borderColor = '';
+                    passwordInput.style.borderColor = '';
+                }, 2000);
+            }
+        });
+
+        // Show error message
+        function showError(message) {
+            errorMsg.textContent = message;
+            errorMsg.style.display = 'block';
+            setTimeout(() => {
+                errorMsg.style.display = 'none';
+            }, 5000);
+        }
+
+        // Toggle loading state
+        function setLoading(isLoading) {
+            if (isLoading) {
+                btnText.style.display = 'none';
+                loading.style.display = 'block';
+                loginBtn.disabled = true;
+                loginBtn.style.cursor = 'not-allowed';
+            } else {
+                btnText.style.display = 'block';
+                loading.style.display = 'none';
+                loginBtn.disabled = false;
+                loginBtn.style.cursor = 'pointer';
+            }
+        }
+
+        // Hide error message on input
+        [usernameInput, passwordInput].forEach(input => {
+            input.addEventListener('input', () => {
+                errorMsg.style.display = 'none';
+            });
+        });
+
+        // Enter key support
+        usernameInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                passwordInput.focus();
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,2963 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIM-NET | محاكي الشبكات المتقدم</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --success-color: #10b981;
+            --danger-color: #ef4444;
+            --warning-color: #f59e0b;
+            --info-color: #06b6d4;
+            --bg-dark: #0f172a;
+            --bg-card: #1e293b;
+            --bg-hover: #334155;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --border-color: #334155;
+            --grid-color: #334155;
+        }
+
+        [data-theme="light"] {
+            --bg-dark: #f1f5f9;
+            --bg-card: #ffffff;
+            --bg-hover: #e2e8f0;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --border-color: #cbd5e1;
+            --grid-color: #cbd5e1;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-primary);
+            overflow: hidden;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        /* Back to system button */
+        .back-to-system {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--bg-card);
+            color: var(--text-primary);
+            padding: 12px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            border: 1px solid var(--border-color);
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        [data-lang="en"] .back-to-system {
+            right: auto;
+            left: 20px;
+            flex-direction: row-reverse;
+        }
+
+        [data-lang="en"] .back-to-system i {
+            transform: rotate(180deg);
+        }
+
+        .back-to-system:hover {
+            background: var(--bg-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        /* System controls */
+        .system-controls {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            display: flex;
+            gap: 10px;
+            z-index: 10000;
+        }
+
+        [data-lang="en"] .system-controls {
+            left: auto;
+            right: 20px;
+        }
+
+        .control-btn {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 10px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .control-btn:hover {
+            background: var(--bg-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        .topology-page { display: flex; height: 100vh; }
+
+        .sidebar {
+            width: 420px;
+            background: var(--bg-card);
+            border-left: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            transition: background-color 0.3s, border-color 0.3s;
+        }
+
+        [data-lang="en"] .sidebar {
+            border-left: none;
+            border-right: 1px solid var(--border-color);
+        }
+
+        .sidebar-header {
+            padding: 25px;
+            border-bottom: 1px solid var(--border-color);
+            text-align: center;
+        }
+
+        .sidebar-header h2 {
+            color: var(--primary-color);
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .device-palette {
+            padding: 20px;
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .palette-title {
+            color: var(--text-secondary);
+            font-size: 14px;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .device-item {
+            background: var(--bg-dark);
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 12px;
+            cursor: grab;
+            transition: all 0.3s ease;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .device-item:hover {
+            border-color: var(--primary-color);
+            transform: translateX(-5px);
+            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+        }
+
+        [data-lang="en"] .device-item:hover {
+            transform: translateX(5px);
+        }
+
+        .device-item:active { cursor: grabbing; }
+
+        .device-item i { font-size: 32px; margin-bottom: 8px; display: block; }
+
+        .device-item.router i { color: #f59e0b; }
+        .device-item.switch i { color: #10b981; }
+        .device-item.firewall i { color: #ef4444; }
+        .device-item.server i { color: #06b6d4; }
+        .device-item.pc i { color: #8b5cf6; }
+
+        .device-item span { font-size: 13px; color: var(--text-secondary); }
+
+        .properties-panel {
+            padding: 20px;
+            border-top: 1px solid var(--border-color);
+            min-height: 300px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .properties-panel h3 {
+            font-size: 16px;
+            margin-bottom: 15px;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .prop-group { margin-bottom: 12px; }
+
+        .prop-group label {
+            display: block;
+            color: var(--text-secondary);
+            font-size: 12px;
+            margin-bottom: 5px;
+        }
+
+        .prop-group input, .prop-group select {
+            width: 100%;
+            padding: 8px;
+            background: var(--bg-dark);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: var(--text-primary);
+            font-size: 13px;
+        }
+
+        .prop-group input:focus, .prop-group select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .prop-actions { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+
+        .btn {
+            flex: 1;
+            padding: 8px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+
+        .btn-primary { background: var(--primary-color); color: white; }
+        .btn-danger { background: var(--danger-color); color: white; }
+        .btn-success { background: var(--success-color); color: white; }
+        .btn-warning { background: var(--warning-color); color: white; }
+        .btn-info { background: var(--info-color); color: white; }
+
+        .power-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid var(--border-color);
+            background: var(--bg-dark);
+            color: var(--text-secondary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .power-btn.on {
+            background: var(--success-color);
+            border-color: var(--success-color);
+            color: white;
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.5);
+        }
+
+        .power-btn.off {
+            background: var(--danger-color);
+            border-color: var(--danger-color);
+            color: white;
+        }
+
+        .canvas-container {
+            flex: 1;
+            position: relative;
+            background: radial-gradient(circle at 1px 1px, var(--grid-color) 1px, transparent 0);
+            background-size: 20px 20px;
+            overflow: hidden;
+        }
+
+        .toolbar {
+            position: absolute;
+            top: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--bg-card);
+            padding: 10px 20px;
+            border-radius: 50px;
+            border: 1px solid var(--border-color);
+            display: flex;
+            gap: 10px;
+            z-index: 100;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .toolbar-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+        }
+
+        .toolbar-btn:hover { background: var(--bg-hover); color: var(--text-primary); }
+        .toolbar-btn.active { background: var(--primary-color); color: white; }
+
+        .cable-selector {
+            display: flex;
+            gap: 5px;
+            padding: 0 10px;
+            border-right: 1px solid var(--border-color);
+            border-left: 1px solid var(--border-color);
+            margin: 0 5px;
+        }
+
+        [data-lang="en"] .cable-selector {
+            border-right: 1px solid var(--border-color);
+            border-left: 1px solid var(--border-color);
+        }
+
+        .cable-option {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: 2px solid var(--border-color);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            transition: all 0.3s;
+        }
+
+        .cable-option:hover { transform: scale(1.1); }
+        .cable-option.active { border-color: white; box-shadow: 0 0 10px rgba(255,255,255,0.5); }
+
+        .cable-option.ethernet { background: #3b82f6; }
+        .cable-option.serial { background: #f59e0b; }
+        .cable-option.fiber { background: #ec4899; }
+
+        #topology-canvas { width: 100%; height: 100%; position: relative; }
+
+        #connections-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: all;
+            z-index: 1;
+        }
+
+        #devices-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 2;
+        }
+
+        .device-node {
+            position: absolute;
+            width: 100px;
+            height: 120px;
+            background: var(--bg-card);
+            border: 3px solid var(--border-color);
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: move;
+            transition: all 0.3s ease;
+            user-select: none;
+            z-index: 10;
+        }
+
+        .device-node:hover { transform: scale(1.05); box-shadow: 0 8px 25px rgba(0,0,0,0.4); }
+        .device-node.selected { border-color: var(--primary-color); box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.3); }
+
+        .device-node.power-off {
+            opacity: 0.6;
+            filter: grayscale(100%);
+        }
+
+        .device-node.power-off .device-icon { color: var(--text-secondary) !important; }
+
+        .power-indicator {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--danger-color);
+            box-shadow: 0 0 5px var(--danger-color);
+        }
+
+        [data-lang="en"] .power-indicator {
+            right: auto;
+            left: 5px;
+        }
+
+        .power-indicator.on {
+            background: var(--success-color);
+            box-shadow: 0 0 5px var(--success-color);
+        }
+
+        .device-icon { font-size: 28px; margin-bottom: 5px; transition: color 0.3s; }
+
+        .device-node.router .device-icon { color: #f59e0b; }
+        .device-node.switch .device-icon { color: #10b981; }
+        .device-node.firewall .device-icon { color: #ef4444; }
+        .device-node.server .device-icon { color: #06b6d4; }
+        .device-node.pc .device-icon { color: #8b5cf6; }
+
+        .device-name {
+            font-size: 11px;
+            color: var(--text-primary);
+            font-weight: 600;
+            max-width: 90px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .device-ip {
+            font-size: 9px;
+            color: var(--text-secondary);
+            max-width: 90px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .device-status-badge {
+            position: absolute;
+            bottom: 2px;
+            font-size: 8px;
+            padding: 2px 6px;
+            border-radius: 10px;
+            background: var(--success-color);
+            color: white;
+            display: none;
+        }
+
+        .device-node.connected .device-status-badge {
+            display: block;
+        }
+
+        .port {
+            position: absolute;
+            width: 14px;
+            height: 14px;
+            background: #1f2937;
+            border: 2px solid var(--border-color);
+            border-radius: 50%;
+            cursor: crosshair;
+            transition: all 0.3s;
+            z-index: 20;
+        }
+
+        .port:hover { background: var(--primary-color); transform: scale(1.4); }
+
+        .port.top { top: -7px; left: 50%; transform: translateX(-50%); }
+        .port.bottom { bottom: -7px; left: 50%; transform: translateX(-50%); }
+        .port.left { left: -7px; top: 50%; transform: translateY(-50%); }
+        .port.right { right: -7px; top: 50%; transform: translateY(-50%); }
+
+        .port.connected { background: var(--success-color); border-color: var(--success-color); }
+        .port.active { animation: portBlink 1s infinite; }
+
+        @keyframes portBlink {
+            0%, 100% { box-shadow: 0 0 5px var(--success-color); }
+            50% { box-shadow: 0 0 15px var(--success-color); }
+        }
+
+        .connection-line {
+            stroke-width: 3;
+            fill: none;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .connection-line:hover { stroke-width: 5; filter: drop-shadow(0 0 8px currentColor); }
+
+        .connection-line.ethernet { stroke: #3b82f6; }
+        .connection-line.serial { stroke: #f59e0b; }
+        .connection-line.fiber { stroke: #ec4899; }
+
+        .connection-line.down { stroke: var(--danger-color) !important; stroke-dasharray: 5,5; }
+
+        .connection-line.selected {
+            stroke-width: 5;
+            filter: drop-shadow(0 0 10px currentColor);
+        }
+
+        .connection-label {
+            font-size: 11px;
+            fill: var(--text-primary);
+            text-anchor: middle;
+            pointer-events: none;
+        }
+
+        .traffic-packet {
+            r: 5;
+            filter: drop-shadow(0 0 8px currentColor);
+        }
+
+        .delete-zone {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            width: 80px;
+            height: 80px;
+            background: rgba(239, 68, 68, 0.1);
+            border: 2px dashed var(--danger-color);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--danger-color);
+            font-size: 24px;
+            opacity: 0;
+            transition: all 0.3s;
+            z-index: 50;
+        }
+
+        [data-lang="en"] .delete-zone {
+            right: auto;
+            left: 20px;
+        }
+
+        .delete-zone.active { opacity: 1; animation: shake 0.5s infinite; }
+        .delete-zone.drag-over { background: rgba(239, 68, 68, 0.3); transform: scale(1.1); }
+
+        @keyframes shake {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(-5deg); }
+            75% { transform: rotate(5deg); }
+        }
+
+        .info-toast {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--bg-card);
+            padding: 15px 25px;
+            border-radius: 50px;
+            border: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .info-toast.show { opacity: 1; }
+
+        .context-menu {
+            position: absolute;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 5px 0;
+            min-width: 200px;
+            z-index: 1000;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+            display: none;
+        }
+
+        .context-menu-item {
+            padding: 10px 15px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.2s;
+        }
+
+        .context-menu-item:hover { background: var(--bg-hover); }
+        .context-menu-item.delete { color: var(--danger-color); }
+        .context-menu-item.terminal { color: var(--info-color); }
+        .context-menu-item.ssh { color: #a855f7; }
+        .context-menu-item.telnet { color: #f97316; }
+
+        .empty-properties {
+            text-align: center;
+            color: var(--text-secondary);
+            padding: 40px 20px;
+        }
+
+        .empty-properties i { font-size: 48px; margin-bottom: 15px; opacity: 0.5; }
+
+        /* Terminal Modal - Advanced Style */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            z-index: 10000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-overlay.show { display: flex; }
+
+        .terminal-modal {
+            width: 1000px;
+            height: 700px;
+            background: #0d1117;
+            border-radius: 12px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid #30363d;
+            box-shadow: 0 25px 80px rgba(0,0,0,0.9);
+        }
+
+        .terminal-header {
+            background: #161b22;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #30363d;
+        }
+
+        .terminal-title {
+            font-size: 14px;
+            color: #c9d1d9;
+            font-family: 'Courier New', monospace;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .connection-status {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            padding: 4px 12px;
+            border-radius: 20px;
+            background: #238636;
+            color: white;
+        }
+
+        .connection-status.connecting {
+            background: #f0883e;
+            animation: pulse 1.5s infinite;
+        }
+
+        .connection-status.disconnected {
+            background: #da3633;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        .terminal-close {
+            background: #da3633;
+            border: none;
+            color: white;
+            cursor: pointer;
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .terminal-close:hover {
+            background: #f85149;
+            transform: scale(1.1);
+        }
+
+        .terminal-body {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+            font-family: 'Courier New', 'Consolas', 'Monaco', monospace;
+            font-size: 13px;
+            line-height: 1.5;
+            background: #0d1117;
+            color: #c9d1d9;
+        }
+
+        .terminal-line {
+            margin: 0;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .terminal-prompt-line {
+            display: flex;
+            align-items: center;
+            margin-top: 5px;
+        }
+
+        .terminal-prompt {
+            color: #7ee787;
+            margin-right: 8px;
+            font-weight: bold;
+        }
+
+        [data-lang="en"] .terminal-prompt {
+            margin-right: 0;
+            margin-left: 8px;
+        }
+
+        .terminal-input {
+            background: transparent;
+            border: none;
+            color: #c9d1d9;
+            font-family: inherit;
+            font-size: inherit;
+            outline: none;
+            flex: 1;
+            caret-color: #58a6ff;
+        }
+
+        .terminal-output { color: #c9d1d9; }
+        .terminal-error { color: #f85149; }
+        .terminal-success { color: #3fb950; }
+        .terminal-warning { color: #d29922; }
+        .terminal-info { color: #58a6ff; }
+        .terminal-system { color: #a371f7; }
+
+        /* Packet Monitor Panel */
+        .packet-monitor {
+            position: fixed;
+            top: 150px;
+            right: 20px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 15px;
+            width: 300px;
+            z-index: 100;
+            max-height: 400px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        [data-lang="en"] .packet-monitor {
+            right: auto;
+            left: 20px;
+        }
+
+        .packet-monitor h4 {
+            margin-bottom: 10px;
+            color: var(--primary-color);
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .packet-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .stat-box {
+            background: var(--bg-dark);
+            padding: 8px;
+            border-radius: 6px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 18px;
+            font-weight: bold;
+            color: var(--success-color);
+        }
+
+        .stat-label {
+            font-size: 10px;
+            color: var(--text-secondary);
+        }
+
+        .packet-log {
+            flex: 1;
+            overflow-y: auto;
+            background: var(--bg-dark);
+            border-radius: 6px;
+            padding: 8px;
+            font-size: 11px;
+            font-family: monospace;
+            max-height: 200px;
+        }
+
+        .packet-entry {
+            padding: 4px 0;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .packet-entry:last-child { border-bottom: none; }
+
+        .packet-icon { font-size: 10px; }
+
+        .packet-icmp { color: #3fb950; }
+        .packet-tcp { color: #58a6ff; }
+        .packet-udp { color: #f0883e; }
+        .packet-arp { color: #a371f7; }
+
+        /* Cable Details Panel */
+        .cable-details {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            background: var(--bg-card);
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            min-width: 350px;
+            z-index: 9999;
+            transition: transform 0.3s;
+        }
+
+        .cable-details.show { transform: translate(-50%, -50%) scale(1); }
+
+        .cable-details h3 {
+            margin-bottom: 15px;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .cable-info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .cable-info-row:last-child { border-bottom: none; }
+
+        .cable-status {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .cable-status.up { background: rgba(16, 185, 129, 0.2); color: var(--success-color); }
+        .cable-status.down { background: rgba(239, 68, 68, 0.2); color: var(--danger-color); }
+
+        .close-cable-details {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+        }
+
+        [data-lang="en"] .close-cable-details {
+            right: auto;
+            left: 10px;
+        }
+
+        /* Toast notification */
+        @keyframes slideInToast {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes slideOutToast {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(100%); opacity: 0; }
+        }
+
+        [data-lang="en"] @keyframes slideInToast {
+            from { transform: translateX(-100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        [data-lang="en"] @keyframes slideOutToast {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(-100%); opacity: 0; }
+        }
+
+        /* Protocol Tabs in Terminal */
+        .protocol-tabs {
+            display: flex;
+            gap: 5px;
+            padding: 10px;
+            background: #161b22;
+            border-bottom: 1px solid #30363d;
+        }
+
+        .protocol-tab {
+            padding: 6px 16px;
+            border: none;
+            background: #21262d;
+            color: #8b949e;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.2s;
+        }
+
+        .protocol-tab:hover { background: #30363d; color: #c9d1d9; }
+        .protocol-tab.active { background: #238636; color: white; }
+
+        .device-data-panel {
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 10px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .data-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 0;
+            border-bottom: 1px solid #30363d;
+            font-size: 12px;
+        }
+
+        .data-row:last-child { border-bottom: none; }
+
+        .data-label { color: #8b949e; }
+        .data-value { color: #58a6ff; font-family: monospace; }
+    </style>
+</head>
+<body>
+    <div class="system-controls" id="system-controls">
+        <a href="index.html" class="back-to-system" id="back-to-system">
+            <i class="fas fa-arrow-left"></i>
+            <span data-i18n="mainSystem">Main System</span>
+        </a>
+        <button class="control-btn" id="lang-toggle" onclick="toggleLanguage()" title="Change Language">
+            <i class="fas fa-globe"></i>
+            <span id="lang-text">AR</span>
+        </button>
+        <button class="control-btn" id="theme-toggle" onclick="toggleTheme()" title="Dark Mode">
+            <i class="fas fa-moon" id="theme-icon"></i>
+        </button>
+    </div>
+
+    <div class="topology-page">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2><i class="fas fa-project-diagram"></i> <span data-i18n="appName">SIM-NET Pro</span></h2>
+            </div>
+
+            <div class="device-palette">
+                <div class="palette-title" data-i18n="dragDevice">اسحب الجهاز للرسم</div>
+
+                <div class="device-item router" draggable="true" data-type="router">
+                    <i class="fas fa-circle-notch"></i>
+                    <span data-i18n="router">Router</span>
+                </div>
+
+                <div class="device-item switch" draggable="true" data-type="switch">
+                    <i class="fas fa-network-wired"></i>
+                    <span data-i18n="switch">Switch</span>
+                </div>
+
+                <div class="device-item firewall" draggable="true" data-type="firewall">
+                    <i class="fas fa-shield-alt"></i>
+                    <span data-i18n="firewall">Firewall</span>
+                </div>
+
+                <div class="device-item server" draggable="true" data-type="server">
+                    <i class="fas fa-server"></i>
+                    <span data-i18n="server">Server</span>
+                </div>
+
+                <div class="device-item pc" draggable="true" data-type="pc">
+                    <i class="fas fa-desktop"></i>
+                    <span data-i18n="pc">PC</span>
+                </div>
+            </div>
+
+            <div class="properties-panel">
+                <h3><i class="fas fa-cog"></i> <span data-i18n="deviceProperties">خصائص الجهاز</span></h3>
+                <div id="properties-content">
+                    <div class="empty-properties">
+                        <i class="fas fa-mouse-pointer"></i>
+                        <p data-i18n="selectDevice">اختر جهازاً لتعديل خصائصه</p>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <div class="canvas-container">
+            <div class="toolbar">
+                <div class="cable-selector">
+                    <div class="cable-option ethernet active" onclick="selectCableType('ethernet')" title="Ethernet"></div>
+                    <div class="cable-option serial" onclick="selectCableType('serial')" title="Serial"></div>
+                    <div class="cable-option fiber" onclick="selectCableType('fiber')" title="Fiber"></div>
+                </div>
+
+                <button class="toolbar-btn" id="connect-btn" onclick="toggleConnectMode()">
+                    <i class="fas fa-link"></i>
+                    <span data-i18n="connectMode">وصلة</span>
+                </button>
+
+                <button class="toolbar-btn" id="simulate-btn" onclick="toggleSimulation()">
+                    <i class="fas fa-play"></i>
+                    <span data-i18n="startSimulation">تشغيل</span>
+                </button>
+
+                <button class="toolbar-btn" onclick="togglePacketMonitor()">
+                    <i class="fas fa-exchange-alt"></i>
+                    <span data-i18n="packetMonitor">مراقبة</span>
+                </button>
+
+                <button class="toolbar-btn" onclick="clearCanvas()">
+                    <i class="fas fa-trash"></i>
+                    <span data-i18n="clearAll">مسح</span>
+                </button>
+
+                <button class="toolbar-btn" onclick="saveTopology()">
+                    <i class="fas fa-save"></i>
+                    <span data-i18n="save">حفظ</span>
+                </button>
+
+                <button class="toolbar-btn" onclick="loadTopology()">
+                    <i class="fas fa-folder-open"></i>
+                    <span data-i18n="load">تحميل</span>
+                </button>
+            </div>
+
+            <!-- Packet Monitor Panel -->
+            <div class="packet-monitor" id="packet-monitor" style="display: none;">
+                <h4><i class="fas fa-network-wired"></i> <span data-i18n="packetMonitor">مراقبة الباكيتات</span></h4>
+                <div class="packet-stats">
+                    <div class="stat-box">
+                        <div class="stat-value" id="total-packets">0</div>
+                        <div class="stat-label" data-i18n="totalPackets">إجمالي</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value" id="active-connections">0</div>
+                        <div class="stat-label" data-i18n="activeConns">اتصالات</div>
+                    </div>
+                </div>
+                <div class="packet-log" id="packet-log"></div>
+            </div>
+
+            <div id="topology-canvas">
+                <svg id="connections-layer"></svg>
+                <div id="devices-layer"></div>
+            </div>
+
+            <div class="delete-zone" id="delete-zone">
+                <i class="fas fa-trash"></i>
+            </div>
+
+            <div class="info-toast" id="info-toast">
+                <i class="fas fa-info-circle"></i>
+                <span id="toast-message" data-i18n="selectTwoDevices">اختر جهازين للاتصال</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="context-menu" id="context-menu">
+        <div class="context-menu-item terminal" onclick="openTerminal('console')">
+            <i class="fas fa-terminal"></i>
+            <span data-i18n="console">Console</span>
+        </div>
+        <div class="context-menu-item ssh" onclick="openTerminal('ssh')">
+            <i class="fas fa-lock"></i>
+            <span>SSH</span>
+        </div>
+        <div class="context-menu-item telnet" onclick="openTerminal('telnet')">
+            <i class="fas fa-unlock"></i>
+            <span>Telnet</span>
+        </div>
+        <div class="context-menu-item" onclick="toggleDevicePower()">
+            <i class="fas fa-power-off"></i>
+            <span id="power-menu-text" data-i18n="powerToggle">تشغيل/إيقاف</span>
+        </div>
+        <div class="context-menu-item" onclick="editDevice()">
+            <i class="fas fa-edit"></i>
+            <span data-i18n="edit">تعديل</span>
+        </div>
+        <div class="context-menu-item" onclick="duplicateDevice()">
+            <i class="fas fa-copy"></i>
+            <span data-i18n="duplicate">نسخ</span>
+        </div>
+        <div class="context-menu-item delete" onclick="deleteDevice()">
+            <i class="fas fa-trash"></i>
+            <span data-i18n="delete">حذف</span>
+        </div>
+    </div>
+
+    <div class="cable-details" id="cable-details">
+        <button class="close-cable-details" onclick="closeCableDetails()"><i class="fas fa-times"></i></button>
+        <h3><i class="fas fa-ethernet"></i> <span data-i18n="cableDetails">تفاصيل الكابل</span></h3>
+        <div class="cable-info-row">
+            <span data-i18n="type">النوع:</span>
+            <strong id="cable-type">Ethernet</strong>
+        </div>
+        <div class="cable-info-row">
+            <span data-i18n="from">من:</span>
+            <strong id="cable-from">Router-1</strong>
+        </div>
+        <div class="cable-info-row">
+            <span data-i18n="to">إلى:</span>
+            <strong id="cable-to">Switch-1</strong>
+        </div>
+        <div class="cable-info-row">
+            <span data-i18n="speed">السرعة:</span>
+            <strong id="cable-speed">1 Gbps</strong>
+        </div>
+        <div class="cable-info-row">
+            <span data-i18n="status">الحالة:</span>
+            <span class="cable-status up" id="cable-status" data-i18n="connected">متصل</span>
+        </div>
+        <div class="cable-info-row">
+            <span data-i18n="protocol">البروتوكول:</span>
+            <strong id="cable-protocol">UP</strong>
+        </div>
+        <div class="cable-info-row">
+            <span data-i18n="traffic">حركة المرور:</span>
+            <strong id="cable-traffic">0 packets/sec</strong>
+        </div>
+    </div>
+
+    <!-- Advanced Terminal Modal -->
+    <div class="modal-overlay" id="terminal-modal">
+        <div class="terminal-modal">
+            <div class="terminal-header">
+                <span class="terminal-title" id="terminal-title">
+                    <i class="fas fa-terminal"></i>
+                    <span id="terminal-device-name">Device</span>
+                    <span class="connection-status" id="connection-status">
+                        <i class="fas fa-check-circle"></i> Connected
+                    </span>
+                </span>
+                <button class="terminal-close" onclick="closeTerminal()"><i class="fas fa-times"></i></button>
+            </div>
+
+            <div class="protocol-tabs" id="protocol-tabs" style="display: none;">
+                <button class="protocol-tab active" onclick="switchProtocol('ssh')">SSH</button>
+                <button class="protocol-tab" onclick="switchProtocol('telnet')">Telnet</button>
+                <button class="protocol-tab" onclick="switchProtocol('console')">Console</button>
+            </div>
+
+            <div class="terminal-body" id="terminal-body"></div>
+        </div>
+    </div>
+
+    <script>
+        // ============================================
+        // TRANSLATIONS
+        // ============================================
+
+        const translations = {
+            ar: {
+                appName: "SIM-NET Pro",
+                mainSystem: "النظام الرئيسي",
+                dragDevice: "اسحب الجهاز للرسم",
+                router: "راوتر",
+                switch: "سويتش",
+                firewall: "جدار حماية",
+                server: "خادم",
+                pc: "حاسوب",
+                deviceProperties: "خصائص الجهاز",
+                selectDevice: "اختر جهازاً لتعديل خصائصه",
+                connectMode: "وصلة",
+                cancelConnect: "إلغاء",
+                startSimulation: "تشغيل",
+                stopSimulation: "إيقاف",
+                clearAll: "مسح",
+                save: "حفظ",
+                load: "تحميل",
+                selectTwoDevices: "اختر جهازين للاتصال",
+                selectSecondDevice: "اختر الجهاز الثاني",
+                edit: "تعديل",
+                duplicate: "نسخ",
+                delete: "حذف",
+                name: "الاسم",
+                ipAddress: "عنوان IP",
+                type: "النوع",
+                saveChanges: "حفظ",
+                deleteDevice: "حذف",
+                added: "تم إضافة",
+                connectionExists: "يوجد اتصال بالفعل",
+                connectionCreated: "تم إنشاء الاتصال",
+                changesSaved: "تم الحفظ",
+                deleted: "تم حذف",
+                clearConfirm: "هل أنت متأكد؟",
+                canvasCleared: "تم المسح",
+                topologySaved: "تم الحفظ",
+                invalidFile: "ملف غير صالح",
+                topologyLoaded: "تم التحميل",
+                title: "محاكي الشبكات المتقدم",
+                powerOn: "تشغيل",
+                powerOff: "إيقاف",
+                cableDetails: "تفاصيل الكابل",
+                connected: "متصل",
+                disconnected: "غير متصل",
+                from: "من",
+                to: "إلى",
+                speed: "السرعة",
+                status: "الحالة",
+                protocol: "البروتوكول",
+                traffic: "حركة المرور",
+                power: "الطاقة",
+                interfaces: "الواجهات",
+                console: "Console",
+                powerToggle: "تشغيل/إيقاف",
+                languageChanged: "تم التبديل للعربية",
+                lightMode: "وضع النهار",
+                darkMode: "وضع الليل",
+                packetMonitor: "مراقبة الباكيتات",
+                totalPackets: "إجمالي",
+                activeConns: "اتصالات",
+                connecting: "جاري الاتصال...",
+                sshConnected: "متصل عبر SSH",
+                telnetConnected: "متصل عبر Telnet",
+                consoleConnected: "متصل عبر Console",
+                connectionFailed: "فشل الاتصال",
+                retrievingData: "جاري جلب البيانات...",
+                dataRetrieved: "تم جلب البيانات بنجاح"
+            },
+            en: {
+                appName: "SIM-NET Pro",
+                mainSystem: "Main System",
+                dragDevice: "Drag device to canvas",
+                router: "Router",
+                switch: "Switch",
+                firewall: "Firewall",
+                server: "Server",
+                pc: "PC",
+                deviceProperties: "Device Properties",
+                selectDevice: "Select a device",
+                connectMode: "Connect",
+                cancelConnect: "Cancel",
+                startSimulation: "Start",
+                stopSimulation: "Stop",
+                clearAll: "Clear",
+                save: "Save",
+                load: "Load",
+                selectTwoDevices: "Select two devices",
+                selectSecondDevice: "Select second device",
+                edit: "Edit",
+                duplicate: "Duplicate",
+                delete: "Delete",
+                name: "Name",
+                ipAddress: "IP Address",
+                type: "Type",
+                saveChanges: "Save",
+                deleteDevice: "Delete",
+                added: "Added",
+                connectionExists: "Connection exists",
+                connectionCreated: "Connected",
+                changesSaved: "Saved",
+                deleted: "Deleted",
+                clearConfirm: "Are you sure?",
+                canvasCleared: "Cleared",
+                topologySaved: "Saved",
+                invalidFile: "Invalid file",
+                topologyLoaded: "Loaded",
+                title: "Advanced Network Simulator",
+                powerOn: "Power On",
+                powerOff: "Power Off",
+                cableDetails: "Cable Details",
+                connected: "Connected",
+                disconnected: "Disconnected",
+                from: "From",
+                to: "To",
+                speed: "Speed",
+                status: "Status",
+                protocol: "Protocol",
+                traffic: "Traffic",
+                power: "Power",
+                interfaces: "Interfaces",
+                console: "Console",
+                powerToggle: "Power On/Off",
+                languageChanged: "Switched to English",
+                lightMode: "Light Mode",
+                darkMode: "Dark Mode",
+                packetMonitor: "Packet Monitor",
+                totalPackets: "Total",
+                activeConns: "Active",
+                connecting: "Connecting...",
+                sshConnected: "Connected via SSH",
+                telnetConnected: "Connected via Telnet",
+                consoleConnected: "Connected via Console",
+                connectionFailed: "Connection Failed",
+                retrievingData: "Retrieving data...",
+                dataRetrieved: "Data retrieved successfully"
+            }
+        };
+
+        // ============================================
+        // GLOBAL STATE
+        // ============================================
+
+        let devices = [];
+        let connections = [];
+        let selectedDevice = null;
+        let selectedCable = null;
+        let connectMode = false;
+        let simulationActive = false;
+        let connectingDevice = null;
+        let deviceIdCounter = 1;
+        let draggedDevice = null;
+        let dragOffset = { x: 0, y: 0 };
+        let currentCableType = 'ethernet';
+        let terminalDevice = null;
+        let terminalMode = 'user';
+        let terminalConfig = false;
+        let currentProtocol = 'console';
+        let packetMonitorVisible = false;
+        let totalPackets = 0;
+        let packetInterval = null;
+
+        const cableTypes = {
+            ethernet: { name: 'Ethernet', speed: '1 Gbps', color: '#3b82f6' },
+            serial: { name: 'Serial', speed: '2 Mbps', color: '#f59e0b' },
+            fiber: { name: 'Fiber', speed: '10 Gbps', color: '#ec4899' }
+        };
+
+        let currentLang = localStorage.getItem('topology-lang') || 'en';
+
+let currentTheme = localStorage.getItem('topology-theme') || 'light';
+
+        // ============================================
+        // LANGUAGE & THEME SYSTEM
+        // ============================================
+
+        function initLanguage() {
+            document.documentElement.setAttribute('data-lang', currentLang);
+            document.documentElement.setAttribute('dir', currentLang === 'ar' ? 'rtl' : 'ltr');
+            document.documentElement.setAttribute('lang', currentLang);
+            updateLanguage();
+            document.title = `SIM-NET Pro | ${t('title')}`;
+            updateDirectionalElements();
+        }
+
+        function toggleLanguage() {
+            currentLang = currentLang === 'ar' ? 'en' : 'ar';
+            localStorage.setItem('topology-lang', currentLang);
+            initLanguage();
+            updateDynamicElements();
+            showToast(t('languageChanged'));
+        }
+
+        function updateLanguage() {
+            const langText = document.getElementById('lang-text');
+            if (langText) langText.textContent = currentLang === 'ar' ? 'EN' : 'AR';
+
+            document.querySelectorAll('[data-i18n]').forEach(element => {
+                const key = element.getAttribute('data-i18n');
+                const translation = translations[currentLang][key];
+                if (translation) element.textContent = translation;
+            });
+        }
+
+        function updateDirectionalElements() {
+            const backBtn = document.getElementById('back-to-system');
+            if (backBtn) {
+                if (currentLang === 'ar') {
+                    backBtn.style.right = '20px';
+                    backBtn.style.left = 'auto';
+                } else {
+                    backBtn.style.right = 'auto';
+                    backBtn.style.left = '20px';
+                }
+            }
+
+            const controls = document.getElementById('system-controls');
+            if (controls) {
+                if (currentLang === 'ar') {
+                    controls.style.left = '20px';
+                    controls.style.right = 'auto';
+                } else {
+                    controls.style.left = 'auto';
+                    controls.style.right = '20px';
+                }
+            }
+        }
+
+        function updateDynamicElements() {
+            if (selectedDevice) showProperties(selectedDevice);
+
+            const connectBtn = document.getElementById('connect-btn');
+            if (connectBtn) {
+                const isActive = connectBtn.classList.contains('active');
+                const icon = isActive ? 'fa-times' : 'fa-link';
+                const text = isActive ? t('cancelConnect') : t('connectMode');
+                connectBtn.innerHTML = `<i class="fas ${icon}"></i><span>${text}</span>`;
+            }
+
+            const simulateBtn = document.getElementById('simulate-btn');
+            if (simulateBtn) {
+                const isSimulating = simulateBtn.classList.contains('simulating');
+                const icon = isSimulating ? 'fa-stop' : 'fa-play';
+                const text = isSimulating ? t('stopSimulation') : t('startSimulation');
+                simulateBtn.innerHTML = `<i class="fas ${icon}"></i><span>${text}</span>`;
+            }
+
+            const powerMenuText = document.getElementById('power-menu-text');
+            if (powerMenuText && selectedDevice) {
+                powerMenuText.textContent = selectedDevice.power ? t('powerOff') : t('powerOn');
+            }
+        }
+
+        function t(key) {
+            return translations[currentLang]?.[key] || translations['en']?.[key] || key;
+        }
+
+        function initTheme() {
+            document.documentElement.setAttribute('data-theme', currentTheme);
+            updateThemeIcon();
+        }
+
+        function toggleTheme() {
+            currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            localStorage.setItem('topology-theme', currentTheme);
+            document.documentElement.setAttribute('data-theme', currentTheme);
+            updateThemeIcon();
+        }
+
+        function updateThemeIcon() {
+            const icon = document.getElementById('theme-icon');
+            if (icon) icon.className = currentTheme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+        }
+
+        // ============================================
+        // INITIALIZATION
+        // ============================================
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initLanguage();
+            initTheme();
+            initDragAndDrop();
+            initCanvasEvents();
+            loadFromStorage();
+        });
+
+        // ============================================
+        // DEVICE MANAGEMENT
+        // ============================================
+
+        function selectCableType(type) {
+            currentCableType = type;
+            document.querySelectorAll('.cable-option').forEach(opt => opt.classList.remove('active'));
+            document.querySelector(`.cable-option.${type}`).classList.add('active');
+        }
+
+        function initDragAndDrop() {
+            const paletteItems = document.querySelectorAll('.device-item');
+            const canvas = document.getElementById('topology-canvas');
+
+            paletteItems.forEach(item => {
+                item.addEventListener('dragstart', (e) => {
+                    e.dataTransfer.setData('device-type', item.dataset.type);
+                });
+            });
+
+            canvas.addEventListener('dragover', (e) => e.preventDefault());
+
+            canvas.addEventListener('drop', (e) => {
+                e.preventDefault();
+                const type = e.dataTransfer.getData('device-type');
+                if (type) {
+                    const rect = canvas.getBoundingClientRect();
+                    createDevice(type, e.clientX - rect.left - 50, e.clientY - rect.top - 60);
+                }
+            });
+        }
+
+        function createDevice(type, x, y, savedData = null) {
+            const device = {
+                id: savedData?.id || deviceIdCounter++,
+                type: type,
+                name: savedData?.name || `${t(type)}-${devices.filter(d => d.type === type).length + 1}`,
+                ip: savedData?.ip || generateIP(type),
+                x: x,
+                y: y,
+                power: savedData?.power ?? true,
+                status: 'down',
+                connections: [],
+                interfaces: savedData?.interfaces || generateInterfaces(type),
+                macAddress: savedData?.macAddress || generateMAC(),
+                // Device data for SSH/Telnet retrieval
+                systemData: savedData?.systemData || generateSystemData(type),
+                routingTable: savedData?.routingTable || [],
+                arpTable: savedData?.arpTable || [],
+                packetStats: { sent: 0, received: 0, errors: 0 }
+            };
+
+            devices.push(device);
+            renderDevice(device);
+            selectDevice(device.id);
+            saveToStorage();
+            showToast(`${t('added')} ${device.name}`);
+            return device;
+        }
+
+        function generateIP(type) {
+            const base = '192.168';
+            const subnet = Math.floor(Math.random() * 255);
+            const host = Math.floor(Math.random() * 254) + 1;
+            return `${base}.${subnet}.${host}`;
+        }
+
+        function generateMAC() {
+            return '00:' + Array(5).fill(0).map(() =>
+                Math.floor(Math.random() * 256).toString(16).padStart(2, '0')
+            ).join(':').toUpperCase();
+        }
+
+        function generateInterfaces(type) {
+            const counts = { router: 4, switch: 8, firewall: 4, server: 2, pc: 1 };
+            const interfaces = [];
+            for (let i = 0; i < (counts[type] || 2); i++) {
+                interfaces.push({
+                    name: type === 'pc' ? 'Eth0' : `GigabitEthernet0/${i}`,
+                    shortName: type === 'pc' ? 'Eth0' : `Gi0/${i}`,
+                    connected: false,
+                    protocol: 'down',
+                    ip: i === 0 ? generateIP(type) : '',
+                    mac: generateMAC(),
+                    status: 'administratively down'
+                });
+            }
+            return interfaces;
+        }
+
+        function generateSystemData(type) {
+            const data = {
+                hostname: '',
+                version: '15.2(4)M6',
+                uptime: '2 minutes',
+                image: 'flash0:c2900-universalk9-mz.SPA.152-4.M6.bin',
+                cpu: Math.floor(Math.random() * 30) + 5,
+                memory: { total: 512000, used: Math.floor(Math.random() * 200000) + 50000 },
+                temperature: Math.floor(Math.random() * 20) + 40,
+                fans: 'OK',
+                power: 'OK'
+            };
+
+            if (type === 'server') {
+                data.os = 'Ubuntu 20.04 LTS';
+                data.kernel = '5.4.0-100-generic';
+                data.services = ['ssh', 'http', 'https', 'dhcp'];
+            } else if (type === 'pc') {
+                data.os = 'Windows 10 Pro';
+                data.hostname = 'DESKTOP-' + Math.random().toString(36).substring(7).toUpperCase();
+            }
+
+            return data;
+        }
+
+        function renderDevice(device) {
+            const layer = document.getElementById('devices-layer');
+            const node = document.createElement('div');
+            node.className = `device-node ${device.type} ${device.power ? '' : 'power-off'}`;
+            node.id = `device-${device.id}`;
+            node.style.left = `${device.x}px`;
+            node.style.top = `${device.y}px`;
+
+            const indicatorStyle = currentLang === 'ar' ? 'right: 5px; left: auto;' : 'right: auto; left: 5px;';
+
+            node.innerHTML = `
+                <div class="power-indicator ${device.power ? 'on' : ''}" style="${indicatorStyle}"></div>
+                <div class="port top" onclick="handlePortClick(event, ${device.id}, 'top')"></div>
+                <div class="port bottom" onclick="handlePortClick(event, ${device.id}, 'bottom')"></div>
+                <div class="port left" onclick="handlePortClick(event, ${device.id}, 'left')"></div>
+                <div class="port right" onclick="handlePortClick(event, ${device.id}, 'right')"></div>
+                <i class="fas ${getDeviceIcon(device.type)} device-icon"></i>
+                <div class="device-name">${device.name}</div>
+                <div class="device-ip">${device.ip}</div>
+                <div class="device-status-badge">UP</div>
+            `;
+
+            node.addEventListener('mousedown', (e) => {
+                if (e.detail === 2) {
+                    openTerminal('console', device.id);
+                } else {
+                    startDrag(e, device.id);
+                }
+            });
+
+            node.addEventListener('click', (e) => {
+                if (!connectMode && !e.target.classList.contains('port')) {
+                    selectDevice(device.id);
+                }
+            });
+
+            node.addEventListener('contextmenu', (e) => showContextMenu(e, device.id));
+
+            layer.appendChild(node);
+        }
+
+        function getDeviceIcon(type) {
+            const icons = {
+                router: 'fa-circle-notch',
+                switch: 'fa-network-wired',
+                firewall: 'fa-shield-alt',
+                server: 'fa-server',
+                pc: 'fa-desktop'
+            };
+            return icons[type] || 'fa-question';
+        }
+
+        function startDrag(e, deviceId) {
+            if (connectMode) return;
+            draggedDevice = devices.find(d => d.id === deviceId);
+            const node = document.getElementById(`device-${deviceId}`);
+            const rect = node.getBoundingClientRect();
+            dragOffset.x = e.clientX - rect.left;
+            dragOffset.y = e.clientY - rect.top;
+
+            document.addEventListener('mousemove', handleDrag);
+            document.addEventListener('mouseup', stopDrag);
+            document.getElementById('delete-zone').classList.add('active');
+        }
+
+        function handleDrag(e) {
+            if (!draggedDevice) return;
+            const canvas = document.getElementById('topology-canvas');
+            const rect = canvas.getBoundingClientRect();
+
+            draggedDevice.x = Math.max(0, Math.min(e.clientX - rect.left - dragOffset.x, rect.width - 100));
+            draggedDevice.y = Math.max(0, Math.min(e.clientY - rect.top - dragOffset.y, rect.height - 120));
+
+            const node = document.getElementById(`device-${draggedDevice.id}`);
+            node.style.left = `${draggedDevice.x}px`;
+            node.style.top = `${draggedDevice.y}px`;
+
+            updateConnections();
+
+            const deleteZone = document.getElementById('delete-zone');
+            const deleteRect = deleteZone.getBoundingClientRect();
+            if (e.clientX > deleteRect.left && e.clientY > deleteRect.top) {
+                deleteZone.classList.add('drag-over');
+            } else {
+                deleteZone.classList.remove('drag-over');
+            }
+        }
+
+        function stopDrag(e) {
+            document.removeEventListener('mousemove', handleDrag);
+            document.removeEventListener('mouseup', stopDrag);
+
+            const deleteZone = document.getElementById('delete-zone');
+            const deleteRect = deleteZone.getBoundingClientRect();
+
+            if (e.clientX > deleteRect.left && e.clientY > deleteRect.top && draggedDevice) {
+                deleteDeviceById(draggedDevice.id);
+            }
+
+            deleteZone.classList.remove('active', 'drag-over');
+            draggedDevice = null;
+            saveToStorage();
+        }
+
+        function selectDevice(deviceId) {
+            document.querySelectorAll('.device-node').forEach(n => n.classList.remove('selected'));
+            selectedDevice = devices.find(d => d.id === deviceId);
+            if (!selectedDevice) return;
+
+            document.getElementById(`device-${deviceId}`).classList.add('selected');
+            showProperties(selectedDevice);
+        }
+
+        function showProperties(device) {
+            const container = document.getElementById('properties-content');
+            container.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <span>${t('power')}:</span>
+                    <button class="power-btn ${device.power ? 'on' : 'off'}" onclick="togglePowerFromProperties()">
+                        <i class="fas fa-power-off"></i>
+                    </button>
+                </div>
+                <div class="prop-group">
+                    <label>${t('name')}</label>
+                    <input type="text" id="prop-name" value="${device.name}">
+                </div>
+                <div class="prop-group">
+                    <label>${t('ipAddress')}</label>
+                    <input type="text" id="prop-ip" value="${device.ip}">
+                </div>
+                <div class="prop-group">
+                    <label>MAC Address</label>
+                    <input type="text" value="${device.macAddress}" disabled style="opacity: 0.6;">
+                </div>
+                <div class="prop-group">
+                    <label>${t('type')}</label>
+                    <input type="text" value="${t(device.type)}" disabled style="opacity: 0.6;">
+                </div>
+                <div class="prop-group">
+                    <label>${t('interfaces')}</label>
+                    <div style="background: var(--bg-dark); padding: 8px; border-radius: 6px; font-size: 11px; max-height: 100px; overflow-y: auto;">
+                        ${device.interfaces.map((iface, idx) => `
+                            <div style="display: flex; justify-content: space-between; padding: 3px 0;">
+                                <span>${iface.shortName}</span>
+                                <span style="color: ${iface.connected ? 'var(--success-color)' : 'var(--text-secondary)'}">
+                                    ${iface.connected ? 'up' : 'down'}
+                                </span>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+                <div class="prop-actions">
+                    <button class="btn btn-primary" onclick="saveProperties()">
+                        <i class="fas fa-save"></i> ${t('saveChanges')}
+                    </button>
+                    <button class="btn btn-success" onclick="openTerminal('console')">
+                        <i class="fas fa-terminal"></i> CLI
+                    </button>
+                    <button class="btn btn-info" onclick="openTerminal('ssh')">
+                        <i class="fas fa-lock"></i> SSH
+                    </button>
+                    <button class="btn btn-warning" onclick="deleteDevice()">
+                        <i class="fas fa-trash"></i> ${t('deleteDevice')}
+                    </button>
+                </div>
+            `;
+        }
+
+        function togglePowerFromProperties() {
+            if (!selectedDevice) return;
+            toggleDevicePowerById(selectedDevice.id);
+            showProperties(selectedDevice);
+        }
+
+        function saveProperties() {
+            if (!selectedDevice) return;
+            selectedDevice.name = document.getElementById('prop-name').value;
+            selectedDevice.ip = document.getElementById('prop-ip').value;
+
+            const node = document.getElementById(`device-${selectedDevice.id}`);
+            node.querySelector('.device-name').textContent = selectedDevice.name;
+            node.querySelector('.device-ip').textContent = selectedDevice.ip;
+
+            saveToStorage();
+            showToast(t('changesSaved'));
+        }
+
+        function toggleConnectMode() {
+            connectMode = !connectMode;
+            const btn = document.getElementById('connect-btn');
+            const toast = document.getElementById('info-toast');
+
+            if (connectMode) {
+                btn.classList.add('active');
+                btn.innerHTML = `<i class="fas fa-times"></i><span>${t('cancelConnect')}</span>`;
+                toast.classList.add('show');
+                document.body.style.cursor = 'crosshair';
+            } else {
+                btn.classList.remove('active');
+                btn.innerHTML = `<i class="fas fa-link"></i><span>${t('connectMode')}</span>`;
+                toast.classList.remove('show');
+                document.body.style.cursor = 'default';
+
+                if (connectingDevice) {
+                    document.getElementById(`device-${connectingDevice.id}`).classList.remove('connecting');
+                    connectingDevice = null;
+                }
+            }
+        }
+
+        function handlePortClick(e, deviceId, port) {
+            e.stopPropagation();
+            if (!connectMode) return;
+
+            const device = devices.find(d => d.id === deviceId);
+            if (!device.power) {
+                showToast(currentLang === 'ar' ? 'الجهاز مغلق! قم بتشغيله أولاً' : 'Device is off! Power it on first', 'error');
+                return;
+            }
+
+            if (!connectingDevice) {
+                connectingDevice = device;
+                document.getElementById(`device-${deviceId}`).classList.add('connecting');
+                document.getElementById('toast-message').textContent = t('selectSecondDevice');
+            } else if (connectingDevice.id !== deviceId) {
+                createConnection(connectingDevice.id, deviceId);
+                document.getElementById(`device-${connectingDevice.id}`).classList.remove('connecting');
+                connectingDevice = null;
+                document.getElementById('toast-message').textContent = t('selectTwoDevices');
+            }
+        }
+
+        function createConnection(fromId, toId) {
+            const exists = connections.find(c =>
+                (c.from === fromId && c.to === toId) ||
+                (c.from === toId && c.to === fromId)
+            );
+
+            if (exists) {
+                showToast(t('connectionExists'), 'warning');
+                return;
+            }
+
+            const fromDevice = devices.find(d => d.id === fromId);
+            const toDevice = devices.find(d => d.id === toId);
+
+            const connection = {
+                id: Date.now(),
+                from: fromId,
+                to: toId,
+                type: currentCableType,
+                status: (fromDevice.power && toDevice.power) ? 'up' : 'down',
+                fromInterface: getAvailableInterface(fromDevice),
+                toInterface: getAvailableInterface(toDevice),
+                traffic: 0,
+                packets: 0
+            };
+
+            connections.push(connection);
+            renderConnection(connection);
+
+            // Update device connected status
+            if (fromDevice.power && toDevice.power) {
+                document.getElementById(`device-${fromId}`).classList.add('connected');
+                document.getElementById(`device-${toId}`).classList.add('connected');
+            }
+
+            saveToStorage();
+            showToast(t('connectionCreated'));
+            updatePacketMonitor();
+        }
+
+        function getAvailableInterface(device) {
+            const iface = device.interfaces.find(i => !i.connected);
+            if (iface) {
+                iface.connected = true;
+                iface.status = 'up';
+                return iface.name;
+            }
+            return 'Unknown';
+        }
+
+        function renderConnection(connection) {
+            const svg = document.getElementById('connections-layer');
+            const group = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+            group.id = `conn-group-${connection.id}`;
+            group.style.cursor = 'pointer';
+            group.onclick = (e) => {
+                e.stopPropagation();
+                showCableDetails(connection);
+            };
+
+            const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            path.id = `conn-${connection.id}`;
+            path.classList.add('connection-line', connection.type);
+            if (connection.status === 'down') path.classList.add('down');
+
+            const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+            label.id = `conn-label-${connection.id}`;
+            label.classList.add('connection-label');
+            label.textContent = cableTypes[connection.type].name;
+
+            group.appendChild(path);
+            group.appendChild(label);
+            svg.appendChild(group);
+
+            updateConnectionPath(connection);
+        }
+
+        function updateConnectionPath(connection) {
+            const fromDevice = devices.find(d => d.id === connection.from);
+            const toDevice = devices.find(d => d.id === connection.to);
+            if (!fromDevice || !toDevice) return;
+
+            const fromX = fromDevice.x + 50;
+            const fromY = fromDevice.y + 60;
+            const toX = toDevice.x + 50;
+            const toY = toDevice.y + 60;
+
+            const midX = (fromX + toX) / 2;
+            const midY = (fromY + toY) / 2;
+            const curvature = 50;
+
+            const path = document.getElementById(`conn-${connection.id}`);
+            const label = document.getElementById(`conn-label-${connection.id}`);
+
+            if (path) {
+                path.setAttribute('d', `M ${fromX} ${fromY} Q ${midX} ${midY - curvature} ${toX} ${toY}`);
+            }
+
+            if (label) {
+                label.setAttribute('x', midX);
+                label.setAttribute('y', midY - curvature - 10);
+            }
+        }
+
+        function updateConnections() {
+            connections.forEach(conn => updateConnectionPath(conn));
+        }
+
+        function showCableDetails(connection) {
+            selectedCable = connection;
+            const fromDevice = devices.find(d => d.id === connection.from);
+            const toDevice = devices.find(d => d.id === connection.to);
+
+            document.getElementById('cable-type').textContent = cableTypes[connection.type].name;
+            document.getElementById('cable-from').textContent = `${fromDevice.name} (${connection.fromInterface})`;
+            document.getElementById('cable-to').textContent = `${toDevice.name} (${connection.toInterface})`;
+            document.getElementById('cable-speed').textContent = cableTypes[connection.type].speed;
+            document.getElementById('cable-traffic').textContent = `${connection.packets} packets/sec`;
+
+            const statusEl = document.getElementById('cable-status');
+            const isUp = connection.status === 'up' && fromDevice.power && toDevice.power;
+            statusEl.textContent = isUp ? t('connected') : t('disconnected');
+            statusEl.className = `cable-status ${isUp ? 'up' : 'down'}`;
+
+            document.getElementById('cable-details').classList.add('show');
+        }
+
+        function closeCableDetails() {
+            document.getElementById('cable-details').classList.remove('show');
+            selectedCable = null;
+        }
+
+        // ============================================
+        // ADVANCED TERMINAL WITH SSH/TELNET
+        // ============================================
+
+        function openTerminal(protocol = 'console', deviceId = null) {
+            const targetDevice = deviceId ? devices.find(d => d.id === deviceId) : selectedDevice;
+            if (!targetDevice) return;
+
+            if (!targetDevice.power) {
+                showToast(currentLang === 'ar' ? 'الجهاز مغلق! قم بتشغيله أولاً' : 'Device is off! Power it on first', 'error');
+                return;
+            }
+
+            terminalDevice = targetDevice;
+            currentProtocol = protocol;
+            terminalMode = 'user';
+            terminalConfig = false;
+
+            const modal = document.getElementById('terminal-modal');
+            const title = document.getElementById('terminal-device-name');
+            const statusEl = document.getElementById('connection-status');
+            const protocolTabs = document.getElementById('protocol-tabs');
+
+            title.textContent = `${targetDevice.name} (${protocol.toUpperCase()})`;
+            modal.classList.add('show');
+            protocolTabs.style.display = 'flex';
+
+            // Simulate connection process
+            statusEl.className = 'connection-status connecting';
+            statusEl.innerHTML = '<i class="fas fa-spinner fa-spin"></i> ' + t('connecting');
+
+            setTimeout(() => {
+                statusEl.className = 'connection-status';
+                const statusText = protocol === 'ssh' ? t('sshConnected') :
+                                  protocol === 'telnet' ? t('telnetConnected') : t('consoleConnected');
+                statusEl.innerHTML = `<i class="fas fa-check-circle"></i> ${statusText}`;
+
+                // Retrieve device data after successful connection
+                retrieveDeviceData(targetDevice, protocol);
+            }, 1500);
+
+            initTerminalBody(protocol);
+        }
+
+        function initTerminalBody(protocol) {
+            const body = document.getElementById('terminal-body');
+            body.innerHTML = '';
+
+            if (protocol === 'ssh') {
+                addTerminalOutput('Trying ' + terminalDevice.ip + '...', 'info');
+                addTerminalOutput('Connected to ' + terminalDevice.ip, 'success');
+                addTerminalOutput('Escape character is \'^]\'.', 'info');
+                addTerminalOutput('');
+            } else if (protocol === 'telnet') {
+                addTerminalOutput('Trying ' + terminalDevice.ip + '...', 'info');
+                addTerminalOutput('Connected to ' + terminalDevice.ip, 'success');
+                addTerminalOutput('Escape character is \'^]\'.', 'info');
+                addTerminalOutput('');
+            }
+
+            // Boot sequence
+            addTerminalOutput('System Bootstrap, Version 15.2(4)M6, RELEASE SOFTWARE (fc2)', 'system');
+            addTerminalOutput('Technical Support: http://www.cisco.com/techsupport', 'system');
+            addTerminalOutput('Copyright (c) 1986-2012 by Cisco Systems, Inc.', 'system');
+            addTerminalOutput('');
+            addTerminalOutput('ROM: System Bootstrap, Version 15.2(4)M6, RELEASE SOFTWARE (fc2)', 'system');
+            addTerminalOutput('');
+            addTerminalOutput('Router uptime is ' + terminalDevice.systemData.uptime, 'info');
+            addTerminalOutput('System returned to ROM by power-on', 'info');
+            addTerminalOutput('');
+            addTerminalOutput('--- System Configuration Dialog ---', 'warning');
+            addTerminalOutput('');
+            addTerminalOutput('Press RETURN to get started!', 'warning');
+            addTerminalOutput('');
+
+            setTimeout(() => {
+                addTerminalPrompt();
+            }, 500);
+        }
+
+        function retrieveDeviceData(device, protocol) {
+            addTerminalOutput('');
+            addTerminalOutput('========================================', 'info');
+            addTerminalOutput(t('retrievingData'), 'info');
+            addTerminalOutput('========================================', 'info');
+            addTerminalOutput('');
+
+            // Simulate data retrieval
+            setTimeout(() => {
+                displayDeviceData(device);
+            }, 1000);
+        }
+
+        function displayDeviceData(device) {
+            const data = device.systemData;
+
+            addTerminalOutput('DEVICE INFORMATION:', 'success');
+            addTerminalOutput('-------------------', 'success');
+            addTerminalOutput(`Hostname: ${device.name}`, 'info');
+            addTerminalOutput(`Device Type: ${device.type.toUpperCase()}`, 'info');
+            addTerminalOutput(`IP Address: ${device.ip}`, 'info');
+            addTerminalOutput(`MAC Address: ${device.macAddress}`, 'info');
+            addTerminalOutput(`IOS Version: ${data.version}`, 'info');
+            addTerminalOutput(`Uptime: ${data.uptime}`, 'info');
+            addTerminalOutput(`System Image: ${data.image}`, 'info');
+            addTerminalOutput('');
+
+            addTerminalOutput('SYSTEM STATUS:', 'success');
+            addTerminalOutput('--------------', 'success');
+            addTerminalOutput(`CPU Usage: ${data.cpu}%`, data.cpu > 80 ? 'warning' : 'info');
+            addTerminalOutput(`Memory: ${Math.round(data.memory.used / 1024)}K/${Math.round(data.memory.total / 1024)}K used`, 'info');
+            addTerminalOutput(`Temperature: ${data.temperature}°C`, data.temperature > 60 ? 'warning' : 'info');
+            addTerminalOutput(`Fans Status: ${data.fans}`, 'info');
+            addTerminalOutput(`Power Supply: ${data.power}`, 'info');
+            addTerminalOutput('');
+
+            addTerminalOutput('INTERFACES:', 'success');
+            addTerminalOutput('-----------', 'success');
+            device.interfaces.forEach(iface => {
+                const status = iface.connected ? 'UP' : 'DOWN';
+                const color = iface.connected ? 'success' : 'error';
+                addTerminalOutput(`${iface.name}: ${status} - IP: ${iface.ip || 'unassigned'}`, color);
+            });
+            addTerminalOutput('');
+
+            addTerminalOutput('ROUTING TABLE:', 'success');
+            addTerminalOutput('-------------', 'success');
+            addTerminalOutput('Codes: C - connected, S - static, R - RIP, M - mobile, B - BGP', 'info');
+            addTerminalOutput('');
+            addTerminalOutput('Gateway of last resort is not set', 'info');
+            addTerminalOutput('');
+            addTerminalOutput(`C    ${device.ip.substring(0, device.ip.lastIndexOf('.'))}.0/24 is directly connected, GigabitEthernet0/0`, 'info');
+            addTerminalOutput('');
+
+            addTerminalOutput('========================================', 'success');
+            addTerminalOutput(t('dataRetrieved'), 'success');
+            addTerminalOutput('========================================', 'success');
+            addTerminalOutput('');
+            addTerminalPrompt();
+        }
+
+        function switchProtocol(protocol) {
+            currentProtocol = protocol;
+            document.querySelectorAll('.protocol-tab').forEach(tab => tab.classList.remove('active'));
+            event.target.classList.add('active');
+            openTerminal(protocol, terminalDevice.id);
+        }
+
+        function closeTerminal() {
+            document.getElementById('terminal-modal').classList.remove('show');
+            terminalDevice = null;
+        }
+
+        function getPrompt() {
+            if (!terminalDevice) return '';
+            if (terminalConfig) {
+                return `${terminalDevice.name}(config)#`;
+            } else if (terminalMode === 'privileged') {
+                return `${terminalDevice.name}#`;
+            } else {
+                return `${terminalDevice.name}>`;
+            }
+        }
+
+        function addTerminalOutput(text, type = 'normal') {
+            const body = document.getElementById('terminal-body');
+            const div = document.createElement('div');
+            div.className = 'terminal-line';
+
+            if (type === 'error') div.classList.add('terminal-error');
+            else if (type === 'success') div.classList.add('terminal-success');
+            else if (type === 'warning') div.classList.add('terminal-warning');
+            else if (type === 'info') div.classList.add('terminal-info');
+            else if (type === 'system') div.classList.add('terminal-system');
+            else div.classList.add('terminal-output');
+
+            div.textContent = text;
+            body.appendChild(div);
+            body.scrollTop = body.scrollHeight;
+        }
+
+        function addTerminalPrompt() {
+            const body = document.getElementById('terminal-body');
+            const div = document.createElement('div');
+            div.className = 'terminal-line terminal-prompt-line';
+
+            const prompt = document.createElement('span');
+            prompt.className = 'terminal-prompt';
+            prompt.textContent = getPrompt();
+
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.className = 'terminal-input';
+            input.spellcheck = false;
+            input.autocomplete = 'off';
+
+            input.addEventListener('keydown', handleTerminalInput);
+            setTimeout(() => input.focus(), 10);
+
+            div.appendChild(prompt);
+            div.appendChild(input);
+            body.appendChild(div);
+            body.scrollTop = body.scrollHeight;
+        }
+
+        function handleTerminalInput(e) {
+            if (e.key !== 'Enter') {
+                if (e.key === 'Tab') {
+                    e.preventDefault();
+                    handleTabCompletion(e.target);
+                }
+                return;
+            }
+
+            const input = e.target;
+            const command = input.value.trim();
+            const promptLine = input.parentElement;
+
+            input.remove();
+            promptLine.innerHTML = `<span class="terminal-prompt">${getPrompt()}</span> ${command}`;
+
+            if (command) {
+                processCommand(command);
+            } else {
+                addTerminalPrompt();
+            }
+        }
+
+        function handleTabCompletion(input) {
+            const partial = input.value.toLowerCase();
+            const commands = ['enable', 'disable', 'configure', 'show', 'ping', 'traceroute', 'hostname', 'interface', 'ip', 'exit', 'end', 'write', 'copy', 'erase', 'reload', 'ssh', 'telnet'];
+            const matches = commands.filter(cmd => cmd.startsWith(partial));
+
+            if (matches.length === 1) {
+                input.value = matches[0];
+            } else if (matches.length > 1) {
+                addTerminalOutput(matches.join('  '));
+                addTerminalPrompt();
+                setTimeout(() => {
+                    const newInput = document.querySelector('.terminal-input');
+                    if (newInput) newInput.value = partial;
+                }, 10);
+            }
+        }
+
+        function processCommand(cmd) {
+            const parts = cmd.split(/\s+/);
+            const mainCmd = parts[0].toLowerCase();
+            const args = parts.slice(1);
+
+            const aliases = {
+                'en': 'enable', 'ena': 'enable', 'conf': 'configure', 'conf t': 'configure terminal',
+                'int': 'interface', 'sh': 'show', 'sh ip int b': 'show ip interface brief',
+                'sh run': 'show running-config', 'sh start': 'show startup-config',
+                'wr': 'write memory', 'ping': 'ping', 'tr': 'traceroute',
+                'host': 'hostname', 'ex': 'exit', 'end': 'end', 'ssh': 'ssh', 'telnet': 'telnet'
+            };
+
+            const fullCmd = aliases[cmd.toLowerCase()] || aliases[mainCmd] || cmd.toLowerCase();
+            const fullParts = fullCmd.split(/\s+/);
+            const command = fullParts[0];
+            const subArgs = fullParts.slice(1).concat(args.slice(1));
+
+            switch(command) {
+                case 'enable':
+                    terminalMode = 'privileged';
+                    addTerminalOutput('');
+                    addTerminalPrompt();
+                    break;
+
+                case 'disable':
+                    terminalMode = 'user';
+                    terminalConfig = false;
+                    addTerminalOutput('');
+                    addTerminalPrompt();
+                    break;
+
+                case 'configure':
+                    if (subArgs[0] === 'terminal' || subArgs[0] === 't') {
+                        if (terminalMode !== 'privileged') {
+                            addTerminalOutput('% Error: Enable mode required', 'error');
+                        } else {
+                            terminalConfig = true;
+                            addTerminalOutput('Enter configuration commands, one per line. End with CNTL/Z.');
+                        }
+                    }
+                    addTerminalPrompt();
+                    break;
+
+                case 'exit':
+                    if (terminalConfig) {
+                        terminalConfig = false;
+                    } else if (terminalMode === 'privileged') {
+                        terminalMode = 'user';
+                    }
+                    addTerminalPrompt();
+                    break;
+
+                case 'end':
+                    terminalConfig = false;
+                    addTerminalPrompt();
+                    break;
+
+                case 'show':
+                    handleShowCommand(subArgs);
+                    addTerminalPrompt();
+                    break;
+
+                case 'hostname':
+                    if (terminalConfig && subArgs[0]) {
+                        const oldName = terminalDevice.name;
+                        terminalDevice.name = subArgs[0];
+                        addTerminalOutput(`Hostname changed from ${oldName} to ${subArgs[0]}`, 'success');
+                        updateDeviceName(terminalDevice.id, subArgs[0]);
+                    } else if (!terminalConfig) {
+                        addTerminalOutput('% Error: Config mode required', 'error');
+                    }
+                    addTerminalPrompt();
+                    break;
+
+                case 'interface':
+                    if (terminalConfig) {
+                        addTerminalOutput(`Entering interface configuration mode: ${subArgs[0] || 'GigabitEthernet0/0'}`);
+                    } else {
+                        addTerminalOutput('% Error: Config mode required', 'error');
+                    }
+                    addTerminalPrompt();
+                    break;
+
+                case 'ip':
+                    if (terminalConfig && subArgs[0] === 'address') {
+                        addTerminalOutput(`Setting IP address to ${subArgs[1] || '0.0.0.0'} ${subArgs[2] || '255.255.255.0'}`);
+                    }
+                    addTerminalPrompt();
+                    break;
+
+                case 'ping':
+                    handlePingCommand(subArgs[0] || '127.0.0.1');
+                    break;
+
+                case 'traceroute':
+                    handleTracerouteCommand(subArgs[0] || '127.0.0.1');
+                    break;
+
+                case 'ssh':
+                    if (subArgs[0]) {
+                        addTerminalOutput(`Connecting to ${subArgs[0]} via SSH...`, 'info');
+                        setTimeout(() => {
+                            addTerminalOutput('Connection established.', 'success');
+                            addTerminalPrompt();
+                        }, 1000);
+                    } else {
+                        addTerminalOutput('Usage: ssh <ip-address>', 'error');
+                        addTerminalPrompt();
+                    }
+                    break;
+
+                case 'telnet':
+                    if (subArgs[0]) {
+                        addTerminalOutput(`Connecting to ${subArgs[0]} via Telnet...`, 'info');
+                        setTimeout(() => {
+                            addTerminalOutput('Connection established.', 'success');
+                            addTerminalPrompt();
+                        }, 1000);
+                    } else {
+                        addTerminalOutput('Usage: telnet <ip-address>', 'error');
+                        addTerminalPrompt();
+                    }
+                    break;
+
+                case 'write':
+                    if (subArgs[0] === 'memory' || subArgs[0] === 'mem') {
+                        addTerminalOutput('Building configuration...', 'success');
+                        addTerminalOutput('[OK]', 'success');
+                    } else {
+                        addTerminalOutput('% Incomplete command.', 'error');
+                    }
+                    addTerminalPrompt();
+                    break;
+
+                case 'copy':
+                    if (subArgs[0] === 'running-config' && subArgs[2] === 'startup-config') {
+                        addTerminalOutput('Destination filename [startup-config]?');
+                        addTerminalOutput('Building configuration...', 'success');
+                        addTerminalOutput('[OK]', 'success');
+                    }
+                    addTerminalPrompt();
+                    break;
+
+                case 'erase':
+                    if (subArgs[0] === 'startup-config') {
+                        addTerminalOutput('Erasing the nvram filesystem will remove all configuration files! Continue? [confirm]');
+                    }
+                    addTerminalPrompt();
+                    break;
+
+                case 'reload':
+                    addTerminalOutput('Proceed with reload? [confirm]');
+                    addTerminalOutput('System Bootstrap, Version 15.2(4)M6...');
+                    setTimeout(() => {
+                        addTerminalOutput('');
+                        addTerminalPrompt();
+                    }, 1000);
+                    break;
+
+                case 'help':
+                case '?':
+                    showHelp();
+                    addTerminalPrompt();
+                    break;
+
+                default:
+                    if (cmd) {
+                        addTerminalOutput(`% Unknown command or computer name, or unable to find computer address "${cmd}"`, 'error');
+                    }
+                    addTerminalPrompt();
+            }
+        }
+
+        function handleShowCommand(args) {
+            const subCmd = args.join(' ');
+
+            if (subCmd.includes('ip interface brief') || subCmd === 'ip int b') {
+                addTerminalOutput('');
+                addTerminalOutput('Interface              IP-Address      OK? Method Status                Protocol');
+                terminalDevice.interfaces.forEach(iface => {
+                    const status = iface.connected ? 'up' : 'down';
+                    const method = iface.ip ? 'manual' : 'unset';
+                    const ip = iface.ip || 'unassigned';
+                    addTerminalOutput(`${iface.name.padEnd(22)} ${ip.padEnd(15)} YES ${method.padEnd(6)} ${status.padEnd(20)} ${status}`);
+                });
+                addTerminalOutput('');
+            } else if (subCmd.includes('running-config') || subCmd === 'run') {
+                addTerminalOutput('');
+                addTerminalOutput('Building configuration...');
+                addTerminalOutput('');
+                addTerminalOutput('Current configuration : 154 bytes');
+                addTerminalOutput('!');
+                addTerminalOutput(`version 15.2`);
+                addTerminalOutput(`hostname ${terminalDevice.name}`);
+                addTerminalOutput('!');
+                terminalDevice.interfaces.forEach((iface, idx) => {
+                    addTerminalOutput(`interface ${iface.name}`);
+                    if (idx === 0) addTerminalOutput(` ip address ${terminalDevice.ip} 255.255.255.0`);
+                    addTerminalOutput(' no shutdown');
+                    addTerminalOutput('!');
+                });
+                addTerminalOutput('end');
+                addTerminalOutput('');
+            } else if (subCmd.includes('version') || subCmd === 'ver') {
+                addTerminalOutput('');
+                addTerminalOutput('Cisco IOS Software, Version 15.2(4)M6');
+                addTerminalOutput('Technical Support: http://www.cisco.com/techsupport');
+                addTerminalOutput('Copyright (c) 1986-2012 by Cisco Systems, Inc.');
+                addTerminalOutput('');
+                addTerminalOutput(`Router uptime is ${terminalDevice.systemData.uptime}`);
+                addTerminalOutput('');
+            } else if (subCmd.includes('clock')) {
+                addTerminalOutput(`*${new Date().toTimeString().split(' ')[0]} ${new Date().toDateString()}`);
+            } else {
+                addTerminalOutput('% Incomplete command.', 'error');
+            }
+        }
+
+        function handlePingCommand(target) {
+            addTerminalOutput(`Type escape sequence to abort.`);
+            addTerminalOutput(`Sending 5, 100-byte ICMP Echos to ${target}, timeout is 2 seconds:`);
+
+            const success = Math.random() > 0.2;
+            let count = 0;
+
+            function sendPing() {
+                if (count >= 5) {
+                    if (success) {
+                        addTerminalOutput('Success rate is 100 percent (5/5), round-trip min/avg/max = 1/2/4 ms', 'success');
+                    } else {
+                        addTerminalOutput('Success rate is 0 percent (0/5)', 'error');
+                    }
+                    addTerminalPrompt();
+                    return;
+                }
+
+                setTimeout(() => {
+                    if (success) {
+                        addTerminalOutput('!', 'success');
+                    } else {
+                        addTerminalOutput('.', 'error');
+                    }
+                    count++;
+                    sendPing();
+                }, 300);
+            }
+
+            sendPing();
+        }
+
+        function handleTracerouteCommand(target) {
+            addTerminalOutput(`Type escape sequence to abort.`);
+            addTerminalOutput(`Tracing the route to ${target}`);
+
+            let hop = 1;
+            function trace() {
+                if (hop > 3) {
+                    addTerminalPrompt();
+                    return;
+                }
+                setTimeout(() => {
+                    addTerminalOutput(` ${hop}  192.168.1.${hop}  1 msec  2 msec  1 msec`);
+                    hop++;
+                    trace();
+                }, 400);
+            }
+            trace();
+        }
+
+        function showHelp() {
+            addTerminalOutput('');
+            addTerminalOutput('Documented commands (type <command> ? for more info):');
+            addTerminalOutput('  enable      Enter privileged mode');
+            addTerminalOutput('  disable     Exit privileged mode');
+            addTerminalOutput('  configure   Enter configuration mode');
+            addTerminalOutput('  show        Show running system information');
+            addTerminalOutput('  ping        Send echo messages');
+            addTerminalOutput('  traceroute  Trace route to destination');
+            addTerminalOutput('  ssh         SSH to remote device');
+            addTerminalOutput('  telnet      Telnet to remote device');
+            addTerminalOutput('  hostname    Set system hostname');
+            addTerminalOutput('  write       Write configuration to memory');
+            addTerminalOutput('  copy        Copy configuration');
+            addTerminalOutput('  exit        Exit current mode');
+            addTerminalOutput('  reload      Halt and perform a cold restart');
+            addTerminalOutput('');
+        }
+
+        function updateDeviceName(deviceId, newName) {
+            const device = devices.find(d => d.id === deviceId);
+            if (device) {
+                device.name = newName;
+                const node = document.getElementById(`device-${deviceId}`);
+                if (node) node.querySelector('.device-name').textContent = newName;
+                if (selectedDevice?.id === deviceId) {
+                    document.getElementById('prop-name').value = newName;
+                }
+                saveToStorage();
+            }
+        }
+
+        // ============================================
+        // AUTOMATIC PACKET SIMULATION
+        // ============================================
+
+        function toggleSimulation() {
+            simulationActive = !simulationActive;
+            const btn = document.getElementById('simulate-btn');
+
+            if (simulationActive) {
+                btn.classList.add('simulating');
+                btn.innerHTML = `<i class="fas fa-stop"></i><span>${t('stopSimulation')}</span>`;
+                startSimulation();
+            } else {
+                btn.classList.remove('simulating');
+                btn.innerHTML = `<i class="fas fa-play"></i><span>${t('startSimulation')}</span>`;
+                stopSimulation();
+            }
+        }
+
+        function startSimulation() {
+            // Update device statuses
+            devices.forEach(device => {
+                const deviceConns = connections.filter(c => c.from === device.id || c.to === device.id);
+                if (deviceConns.length === 0 || !device.power) {
+                    device.status = 'down';
+                } else {
+                    device.status = 'up';
+                }
+                updateDeviceVisuals(device);
+            });
+
+            // Update connection statuses
+            connections.forEach(conn => {
+                const fromDevice = devices.find(d => d.id === conn.from);
+                const toDevice = devices.find(d => d.id === conn.to);
+                conn.status = (fromDevice.power && toDevice.power && fromDevice.status === 'up' && toDevice.status === 'up') ? 'up' : 'down';
+                updateConnectionVisuals(conn);
+            });
+
+            // Start automatic packet generation
+            startAutomaticPackets();
+        }
+
+        function stopSimulation() {
+            devices.forEach(device => {
+                device.status = 'down';
+                updateDeviceVisuals(device);
+            });
+
+            connections.forEach(conn => {
+                conn.status = 'down';
+                updateConnectionVisuals(conn);
+            });
+
+            stopAutomaticPackets();
+            document.querySelectorAll('.traffic-packet').forEach(p => p.remove());
+        }
+
+        function updateDeviceVisuals(device) {
+            const node = document.getElementById(`device-${device.id}`);
+            if (!node) return;
+
+            const indicator = node.querySelector('.power-indicator');
+            indicator.classList.toggle('on', device.power);
+        }
+
+        function updateConnectionVisuals(connection) {
+            const path = document.getElementById(`conn-${connection.id}`);
+            if (!path) return;
+
+            path.classList.remove('down');
+            if (connection.status === 'down') {
+                path.classList.add('down');
+            }
+        }
+
+        function startAutomaticPackets() {
+            // Generate packets every 500ms
+            packetInterval = setInterval(() => {
+                if (!simulationActive) return;
+
+                connections.forEach(conn => {
+                    if (conn.status === 'up') {
+                        // Random packet generation
+                        if (Math.random() > 0.3) {
+                            createTrafficPacket(conn);
+                            logPacket(conn);
+                        }
+                    }
+                });
+            }, 500);
+        }
+
+        function stopAutomaticPackets() {
+            if (packetInterval) {
+                clearInterval(packetInterval);
+                packetInterval = null;
+            }
+        }
+
+        function createTrafficPacket(connection) {
+            const svg = document.getElementById('connections-layer');
+            const path = document.getElementById(`conn-${connection.id}`);
+
+            const packetTypes = ['icmp', 'tcp', 'udp', 'arp'];
+            const packetType = packetTypes[Math.floor(Math.random() * packetTypes.length)];
+
+            const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+            circle.classList.add('traffic-packet', `packet-${packetType}`);
+
+            const colors = {
+                icmp: '#3fb950',
+                tcp: '#58a6ff',
+                udp: '#f0883e',
+                arp: '#a371f7'
+            };
+
+            circle.style.fill = colors[packetType];
+
+            const length = path.getTotalLength();
+            let progress = 0;
+            const speed = 2 + Math.random() * 3;
+
+            function animate() {
+                if (!simulationActive) {
+                    circle.remove();
+                    return;
+                }
+
+                progress += speed;
+                if (progress > length) {
+                    circle.remove();
+                    return;
+                }
+
+                const point = path.getPointAtLength(progress);
+                circle.setAttribute('cx', point.x);
+                circle.setAttribute('cy', point.y);
+                requestAnimationFrame(animate);
+            }
+
+            svg.appendChild(circle);
+            animate();
+
+            // Update connection stats
+            connection.packets++;
+            totalPackets++;
+            updatePacketMonitor();
+        }
+
+        function logPacket(connection) {
+            if (!packetMonitorVisible) return;
+
+            const fromDevice = devices.find(d => d.id === connection.from);
+            const toDevice = devices.find(d => d.id === connection.to);
+            const log = document.getElementById('packet-log');
+
+            const protocols = ['ICMP', 'TCP', 'UDP', 'ARP'];
+            const protocol = protocols[Math.floor(Math.random() * protocols.length)];
+            const icons = {
+                'ICMP': 'fa-exchange-alt',
+                'TCP': 'fa-arrow-right',
+                'UDP': 'fa-bolt',
+                'ARP': 'fa-broadcast-tower'
+            };
+            const colors = {
+                'ICMP': 'packet-icmp',
+                'TCP': 'packet-tcp',
+                'UDP': 'packet-udp',
+                'ARP': 'packet-arp'
+            };
+
+            const entry = document.createElement('div');
+            entry.className = 'packet-entry';
+            entry.innerHTML = `
+                <i class="fas ${icons[protocol]} packet-icon ${colors[protocol]}"></i>
+                <span>${fromDevice.name} → ${toDevice.name}</span>
+                <span style="margin-left: auto; font-size: 9px; color: var(--text-secondary);">${protocol}</span>
+            `;
+
+            log.insertBefore(entry, log.firstChild);
+
+            // Keep only last 20 entries
+            while (log.children.length > 20) {
+                log.removeChild(log.lastChild);
+            }
+        }
+
+        function togglePacketMonitor() {
+            packetMonitorVisible = !packetMonitorVisible;
+            const panel = document.getElementById('packet-monitor');
+            panel.style.display = packetMonitorVisible ? 'flex' : 'none';
+            if (packetMonitorVisible) updatePacketMonitor();
+        }
+
+        function updatePacketMonitor() {
+            document.getElementById('total-packets').textContent = totalPackets;
+            document.getElementById('active-connections').textContent = connections.filter(c => c.status === 'up').length;
+        }
+
+        // ============================================
+        // DEVICE MANAGEMENT
+        // ============================================
+
+        function toggleDevicePower() {
+            if (!selectedDevice) return;
+            toggleDevicePowerById(selectedDevice.id);
+        }
+
+        function toggleDevicePowerById(deviceId) {
+            const device = devices.find(d => d.id === deviceId);
+            if (!device) return;
+
+            device.power = !device.power;
+            const node = document.getElementById(`device-${deviceId}`);
+
+            if (device.power) {
+                node.classList.remove('power-off');
+                showToast(`${device.name} ${t('powerOn')}`);
+            } else {
+                node.classList.add('power-off');
+                showToast(`${device.name} ${t('powerOff')}`);
+
+                connections.filter(c => c.from === deviceId || c.to === deviceId).forEach(conn => {
+                    conn.status = 'down';
+                    updateConnectionVisuals(conn);
+                });
+            }
+
+            updateDeviceVisuals(device);
+            saveToStorage();
+
+            if (selectedDevice?.id === deviceId) {
+                showProperties(device);
+            }
+        }
+
+        function showContextMenu(e, deviceId) {
+            e.preventDefault();
+            selectedDevice = devices.find(d => d.id === deviceId);
+
+            const menu = document.getElementById('context-menu');
+            menu.style.left = `${e.pageX}px`;
+            menu.style.top = `${e.pageY}px`;
+            menu.style.display = 'block';
+
+            const powerMenuText = document.getElementById('power-menu-text');
+            if (powerMenuText) {
+                powerMenuText.textContent = selectedDevice.power ? t('powerOff') : t('powerOn');
+            }
+
+            document.addEventListener('click', hideContextMenu, { once: true });
+        }
+
+        function hideContextMenu() {
+            document.getElementById('context-menu').style.display = 'none';
+        }
+
+        function editDevice() {
+            if (selectedDevice) showProperties(selectedDevice);
+        }
+
+        function duplicateDevice() {
+            if (!selectedDevice) return;
+            createDevice(
+                selectedDevice.type,
+                selectedDevice.x + 30,
+                selectedDevice.y + 30,
+                { ...selectedDevice, id: null, name: selectedDevice.name + '_copy', interfaces: generateInterfaces(selectedDevice.type) }
+            );
+        }
+
+        function deleteDevice() {
+            if (!selectedDevice) return;
+            deleteDeviceById(selectedDevice.id);
+        }
+
+        function deleteDeviceById(deviceId) {
+            const device = devices.find(d => d.id === deviceId);
+            if (!device) return;
+
+            connections = connections.filter(c => {
+                if (c.from === deviceId || c.to === deviceId) {
+                    document.getElementById(`conn-group-${c.id}`)?.remove();
+                    const otherDevice = devices.find(d => d.id === (c.from === deviceId ? c.to : c.from));
+                    if (otherDevice) {
+                        const iface = otherDevice.interfaces.find(i => i.name === (c.from === deviceId ? c.toInterface : c.fromInterface));
+                        if (iface) iface.connected = false;
+                    }
+                    return false;
+                }
+                return true;
+            });
+
+            devices = devices.filter(d => d.id !== deviceId);
+            document.getElementById(`device-${deviceId}`)?.remove();
+
+            if (selectedDevice?.id === deviceId) {
+                selectedDevice = null;
+                document.getElementById('properties-content').innerHTML = `
+                    <div class="empty-properties">
+                        <i class="fas fa-mouse-pointer"></i>
+                        <p data-i18n="selectDevice">${t('selectDevice')}</p>
+                    </div>
+                `;
+            }
+
+            saveToStorage();
+            showToast(`${t('deleted')} ${device.name}`);
+            updatePacketMonitor();
+        }
+
+        function clearCanvas() {
+            if (!confirm(t('clearConfirm'))) return;
+
+            devices = [];
+            connections = [];
+            deviceIdCounter = 1;
+            selectedDevice = null;
+            totalPackets = 0;
+
+            document.getElementById('devices-layer').innerHTML = '';
+            document.getElementById('connections-layer').innerHTML = '';
+            document.getElementById('properties-content').innerHTML = `
+                <div class="empty-properties">
+                    <i class="fas fa-mouse-pointer"></i>
+                    <p data-i18n="selectDevice">${t('selectDevice')}</p>
+                </div>
+            `;
+
+            saveToStorage();
+            showToast(t('canvasCleared'));
+            updatePacketMonitor();
+        }
+
+        function saveTopology() {
+            const data = { devices, connections, timestamp: new Date().toISOString() };
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `topology-${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            showToast(t('topologySaved'));
+        }
+
+        function loadTopology() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+            input.onchange = (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    try {
+                        const data = JSON.parse(event.target.result);
+                        restoreTopology(data);
+                    } catch (err) {
+                        showToast(t('invalidFile'), 'error');
+                    }
+                };
+                reader.readAsText(file);
+            };
+            input.click();
+        }
+
+        function restoreTopology(data) {
+            clearCanvas();
+            data.devices.forEach(d => createDevice(d.type, d.x, d.y, d));
+            data.connections.forEach(c => {
+                const conn = { ...c, status: 'down' };
+                connections.push(conn);
+                renderConnection(conn);
+            });
+            showToast(t('topologyLoaded'));
+        }
+
+        function saveToStorage() {
+            localStorage.setItem('simnet_topology_pro', JSON.stringify({ devices, connections }));
+        }
+
+        function loadFromStorage() {
+            const saved = localStorage.getItem('simnet_topology_pro');
+            if (!saved) return;
+            try {
+                const data = JSON.parse(saved);
+                restoreTopology(data);
+            } catch (e) {
+                console.error('Failed to load topology');
+            }
+        }
+
+        function showToast(message, type = 'success') {
+            const toast = document.createElement('div');
+            const isRTL = currentLang === 'ar';
+
+            toast.style.cssText = `
+                position: fixed;
+                top: 80px;
+                ${isRTL ? 'right' : 'left'}: 20px;
+                background: ${type === 'error' ? '#ef4444' : type === 'warning' ? '#f59e0b' : '#10b981'};
+                color: white;
+                padding: 15px 25px;
+                border-radius: 8px;
+                z-index: 10000;
+                animation: ${isRTL ? 'slideInToast' : 'slideInToast'} 0.3s ease;
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                font-size: 14px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            `;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.animation = `${isRTL ? 'slideOutToast' : 'slideOutToast'} 0.3s ease`;
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        function initCanvasEvents() {
+            document.getElementById('topology-canvas').addEventListener('click', (e) => {
+                if (e.target.id === 'topology-canvas' || e.target.id === 'devices-layer') {
+                    document.querySelectorAll('.device-node').forEach(n => n.classList.remove('selected'));
+                    selectedDevice = null;
+                    document.getElementById('properties-content').innerHTML = `
+                        <div class="empty-properties">
+                            <i class="fas fa-mouse-pointer"></i>
+                            <p data-i18n="selectDevice">${t('selectDevice')}</p>
+                        </div>
+                    `;
+                    closeCableDetails();
+                }
+            });
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Delete' && selectedDevice) deleteDevice();
+            if (e.key === 'Escape') {
+                if (connectMode) toggleConnectMode();
+                closeTerminal();
+                closeCableDetails();
+            }
+        });
+
+        document.getElementById('terminal-modal').addEventListener('click', (e) => {
+            if (e.target.classList.contains('modal-overlay')) {
+                closeTerminal();
+            }
+        });
+    </script>
+</body>
+</html>

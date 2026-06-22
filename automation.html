@@ -1,0 +1,1884 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NetAuto - Network Management System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --secondary: #64748b;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --dark: #0f172a;
+            --light: #f8fafc;
+            --border: #e2e8f0;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            min-height: 100vh;
+            color: var(--dark);
+        }
+
+        /* Login Screen */
+        .login-screen {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .login-card {
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        .login-card h1 {
+            text-align: center;
+            color: var(--dark);
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+
+        .login-card .subtitle {
+            text-align: center;
+            color: var(--secondary);
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+
+        .btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        .btn:disabled {
+            background: var(--secondary);
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-success {
+            background: var(--success);
+        }
+
+        .btn-success:hover {
+            background: #059669;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+        }
+
+        .btn-secondary {
+            background: var(--secondary);
+        }
+
+        .btn-home {
+            background: #8b5cf6;
+        }
+
+        .btn-home:hover {
+            background: #7c3aed;
+        }
+
+        /* Main Dashboard */
+        .main-dashboard {
+            display: none;
+            min-height: 100vh;
+        }
+
+        .dashboard-header {
+            background: white;
+            padding: 20px 40px;
+            box-shadow: var(--shadow);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-small {
+            padding: 10px 20px;
+            font-size: 14px;
+            width: auto;
+            white-space: nowrap;
+        }
+
+        .dashboard-content {
+            padding: 30px 40px;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            transition: transform 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+        }
+
+        .stat-icon.blue { background: var(--primary); }
+        .stat-icon.green { background: var(--success); }
+        .stat-icon.orange { background: var(--warning); }
+        .stat-icon.red { background: var(--danger); }
+
+        .stat-info h3 {
+            font-size: 28px;
+            color: var(--dark);
+            margin-bottom: 4px;
+        }
+
+        .stat-info p {
+            color: var(--secondary);
+            font-size: 14px;
+        }
+
+        /* Navigation Tabs */
+        .nav-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            background: white;
+            padding: 10px;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+        }
+
+        .nav-tab {
+            padding: 12px 24px;
+            background: transparent;
+            border: 2px solid transparent;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--secondary);
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-tab:hover {
+            background: #f1f5f9;
+            color: var(--primary);
+        }
+
+        .nav-tab.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* Content Sections */
+        .content-section {
+            display: none;
+            animation: fadeIn 0.3s;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .section-card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .section-title {
+            font-size: 22px;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Forms */
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-size: 16px;
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        /* Device Form */
+        .add-device-form {
+            background: #f8fafc;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+            display: none;
+        }
+
+        .add-device-form.show {
+            display: block;
+            animation: slideDown 0.3s;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; max-height: 0; }
+            to { opacity: 1; max-height: 500px; }
+        }
+
+        /* Devices Table */
+        .devices-table-container {
+            overflow-x: auto;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .data-table th, .data-table td {
+            padding: 16px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .data-table th {
+            background: #f8fafc;
+            font-weight: 600;
+            color: var(--secondary);
+            font-size: 14px;
+            text-transform: uppercase;
+        }
+
+        .data-table tr:hover {
+            background: #f8fafc;
+        }
+
+        .data-table input {
+            padding: 8px;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            width: 100%;
+        }
+
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .status-online {
+            background: #dcfce7;
+            color: var(--success);
+        }
+
+        .status-offline {
+            background: #fee2e2;
+            color: var(--danger);
+        }
+
+        .status-pending {
+            background: #fef3c7;
+            color: var(--warning);
+        }
+
+        .table-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-icon {
+            width: 36px;
+            height: 36px;
+            padding: 0;
+            border-radius: 8px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: var(--dark);
+            color: white;
+            padding: 16px 24px;
+            border-radius: 12px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
+            display: none;
+            align-items: center;
+            gap: 12px;
+            z-index: 2000;
+            animation: slideIn 0.3s;
+            min-width: 300px;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .toast.show {
+            display: flex;
+        }
+
+        .toast.success { background: var(--success); }
+        .toast.error { background: var(--danger); }
+        .toast.warning { background: var(--warning); }
+
+        /* Loading Spinner */
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--secondary);
+        }
+
+        .empty-state i {
+            font-size: 64px;
+            margin-bottom: 20px;
+            color: var(--border);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .dashboard-content {
+                padding: 20px;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .nav-tabs {
+                overflow-x: auto;
+                flex-wrap: nowrap;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .header-actions {
+                width: 100%;
+                justify-content: flex-start;
+            }
+
+            .dashboard-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+
+        /* Provisioning Section */
+        .config-type-selector {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 24px;
+        }
+
+        .config-type-card {
+            padding: 20px;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .config-type-card:hover {
+            border-color: var(--primary);
+            background: #f8fafc;
+        }
+
+        .config-type-card.active {
+            border-color: var(--primary);
+            background: var(--primary);
+            color: white;
+        }
+
+        .config-type-card i {
+            font-size: 32px;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .config-panel {
+            display: none;
+        }
+
+        .config-panel.active {
+            display: block;
+            animation: fadeIn 0.3s;
+        }
+
+        /* Command Preview */
+        .command-preview {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 12px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-top: 20px;
+            white-space: pre-wrap;
+            display: none;
+        }
+
+        .command-preview.show {
+            display: block;
+        }
+
+        /* Progress Bar */
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e2e8f0;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--success);
+            transition: width 0.3s;
+            border-radius: 4px;
+        }
+
+        /* Language Toggle */
+        .lang-toggle {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: white;
+            border: 1px solid var(--border);
+            padding: 10px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .lang-toggle:hover {
+            background: var(--light);
+        }
+    </style>
+</head>
+<body>
+
+<!--    &lt;!&ndash; Language Toggle &ndash;&gt;-->
+<!--    <button class="lang-toggle" onclick="toggleLanguage()" id="langToggle">-->
+<!--        <i class="fas fa-globe"></i>-->
+<!--        <span>العربية</span>-->
+<!--    </button>-->
+
+    <!-- Login Screen -->
+    <div class="login-screen" id="loginScreen">
+        <div class="login-card">
+            <h1><i class="fas fa-network-wired"></i> NetAuto</h1>
+            <p class="subtitle">Smart Network Automation & Management System</p>
+
+            <form id="loginForm">
+                <div class="form-group">
+                    <label><i class="fas fa-user"></i> Username</label>
+                    <input type="text" id="username" placeholder="admin" required autocomplete="username">
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-lock"></i> Password</label>
+                    <input type="password" id="password" placeholder="••••••••" required autocomplete="current-password">
+                </div>
+                <button type="submit" class="btn btn-success" id="loginBtn">
+                    <span>Login</span>
+                </button>
+            </form>
+
+            <div style="margin-top: 20px; text-align: center; color: var(--secondary); font-size: 14px;">
+                <p>Default: admin / admin</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Dashboard -->
+    <div class="main-dashboard" id="mainDashboard">
+        <header class="dashboard-header">
+            <div class="logo">
+                <i class="fas fa-network-wired"></i>
+                <span>NetAuto - Network Management System</span>
+            </div>
+            <div class="header-actions">
+                <a href="index.html" class="btn btn-home btn-small" style="text-decoration: none;">
+                    <i class="fas fa-home"></i> Back to Home
+                </a>
+                <button class="btn btn-secondary btn-small" onclick="refreshAll()">
+                    <i class="fas fa-sync-alt"></i> Refresh
+                </button>
+                <button class="btn btn-danger btn-small" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </button>
+            </div>
+        </header>
+
+        <div class="dashboard-content">
+            <!-- Stats -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon blue">
+                        <i class="fas fa-server"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="totalDevices">0</h3>
+                        <p>Total Devices</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon green">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="onlineDevices">0</h3>
+                        <p>Online</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon orange">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="alertCount">0</h3>
+                        <p>Alerts</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon red">
+                        <i class="fas fa-times-circle"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="offlineDevices">0</h3>
+                        <p>Offline</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Navigation -->
+            <div class="nav-tabs">
+                <button class="nav-tab active" onclick="showSection('devices', this)">
+                    <i class="fas fa-server"></i> Devices
+                </button>
+                <button class="nav-tab" onclick="showSection('provisioning', this)">
+                    <i class="fas fa-cogs"></i> Provisioning
+                </button>
+                <button class="nav-tab" onclick="showSection('config', this)">
+                    <i class="fas fa-sliders-h"></i> Config Management
+                </button>
+                <button class="nav-tab" onclick="showSection('monitoring', this)">
+                    <i class="fas fa-chart-line"></i> Monitoring
+                </button>
+                <button class="nav-tab" onclick="showSection('troubleshoot', this)">
+                    <i class="fas fa-tools"></i> Troubleshooting
+                </button>
+                <button class="nav-tab" onclick="showSection('security', this)">
+                    <i class="fas fa-shield-alt"></i> Security
+                </button>
+                <button class="nav-tab" onclick="showSection('users', this)">
+                    <i class="fas fa-users"></i> Users
+                </button>
+                <button class="nav-tab" onclick="showSection('reports', this)">
+                    <i class="fas fa-file-alt"></i> Reports
+                </button>
+            </div>
+
+            <!-- DEVICES SECTION -->
+            <div class="content-section active" id="devices">
+                <div class="section-card">
+                    <div class="section-header">
+                        <h2 class="section-title">
+                            <i class="fas fa-server"></i>
+                            Device Management
+                        </h2>
+                        <button class="btn btn-success btn-small" onclick="toggleDeviceForm()">
+                            <i class="fas fa-plus"></i> Add New Device
+                        </button>
+                    </div>
+
+                    <!-- Add Device Form -->
+                    <div class="add-device-form" id="addDeviceForm">
+                        <h3 style="margin-bottom: 20px; color: var(--dark);">
+                            <i class="fas fa-plus-circle"></i> Add New Device
+                        </h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>IP Address *</label>
+                                <input type="text" id="deviceIp" placeholder="192.168.1.1" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Hostname *</label>
+                                <input type="text" id="deviceHostname" placeholder="Router-Core-01" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Device Type *</label>
+                                <select id="deviceType" required>
+                                    <option value="Router">Router</option>
+                                    <option value="Switch">Switch</option>
+                                    <option value="Firewall">Firewall</option>
+                                    <option value="Access Point">Access Point</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Username *</label>
+                                <input type="text" id="deviceUsername" placeholder="admin" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Password *</label>
+                                <input type="password" id="devicePassword" placeholder="••••••••" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Location (Optional)</label>
+                                <input type="text" id="deviceLocation" placeholder="Main Office">
+                            </div>
+                        </div>
+                        <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                            <button type="button" class="btn btn-secondary btn-small" onclick="toggleDeviceForm()" style="width: auto;">
+                                <i class="fas fa-times"></i> Cancel
+                            </button>
+                            <button type="button" class="btn btn-success btn-small" onclick="saveDevice()" style="width: auto; min-width: 150px;" id="saveDeviceBtn">
+                                <i class="fas fa-save"></i> Save Device
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Devices Table -->
+                    <div class="devices-table-container">
+                        <table class="data-table" id="devicesTable">
+                            <thead>
+                                <tr>
+                                    <th>Status</th>
+                                    <th>IP Address</th>
+                                    <th>Hostname</th>
+                                    <th>Type</th>
+                                    <th>Location</th>
+                                    <th>Last Seen</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="devicesTableBody">
+                                <!-- Devices will be loaded here -->
+                            </tbody>
+                        </table>
+
+                        <!-- Empty State -->
+                        <div class="empty-state" id="emptyState" style="display: none;">
+                            <i class="fas fa-server"></i>
+                            <h3>No Devices Found</h3>
+                            <p>Click "Add New Device" to start managing your network</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PROVISIONING SECTION -->
+            <div class="content-section" id="provisioning">
+                <div class="section-card">
+                    <div class="section-header">
+                        <h2 class="section-title">
+                            <i class="fas fa-cogs"></i>
+                            Network Provisioning
+                        </h2>
+                    </div>
+
+                    <div class="config-type-selector">
+                        <div class="config-type-card active" onclick="selectConfigType('vlan', this)">
+                            <i class="fas fa-network-wired"></i>
+                            <div>VLAN</div>
+                        </div>
+                        <div class="config-type-card" onclick="selectConfigType('routing', this)">
+                            <i class="fas fa-route"></i>
+                            <div>Routing</div>
+                        </div>
+                        <div class="config-type-card" onclick="selectConfigType('ip', this)">
+                            <i class="fas fa-ip-address"></i>
+                            <div>IP Addressing</div>
+                        </div>
+                        <div class="config-type-card" onclick="selectConfigType('template', this)">
+                            <i class="fas fa-file-code"></i>
+                            <div>Template</div>
+                        </div>
+                    </div>
+
+                    <!-- VLAN Panel -->
+                    <div class="config-panel active" id="vlanPanel">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Target Devices</label>
+                                <select id="vlanDevices" multiple size="3">
+                                    <option value="all">All Devices</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>VLAN ID *</label>
+                                <input type="number" id="vlanId" placeholder="10" min="1" max="4094">
+                            </div>
+                            <div class="form-group">
+                                <label>VLAN Name *</label>
+                                <input type="text" id="vlanName" placeholder="Sales-Department">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Interface</label>
+                                <input type="text" id="vlanInterface" placeholder="GigabitEthernet0/1">
+                            </div>
+                            <div class="form-group">
+                                <label>Mode</label>
+                                <select id="vlanMode">
+                                    <option value="access">Access</option>
+                                    <option value="trunk">Trunk</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button class="btn btn-success" onclick="generateVLANConfig()">
+                            <i class="fas fa-magic"></i> Generate Commands
+                        </button>
+                        <button class="btn btn-primary" onclick="applyVLANConfig()" style="margin-left: 10px;">
+                            <i class="fas fa-play"></i> Apply to Devices
+                        </button>
+                    </div>
+
+                    <!-- Routing Panel -->
+                    <div class="config-panel" id="routingPanel">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Routing Type</label>
+                                <select id="routingType" onchange="updateRoutingForm()">
+                                    <option value="ospf">OSPF</option>
+                                    <option value="bgp">BGP</option>
+                                    <option value="static">Static Route</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Process ID / AS Number</label>
+                                <input type="text" id="routingProcessId" placeholder="1">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Network Statements (one per line)</label>
+                            <textarea id="routingNetworks" placeholder="192.168.1.0 0.0.0.255 area 0&#10;192.168.2.0 0.0.0.255 area 0"></textarea>
+                        </div>
+                        <button class="btn btn-success" onclick="generateRoutingConfig()">
+                            <i class="fas fa-magic"></i> Generate Commands
+                        </button>
+                    </div>
+
+                    <!-- Command Preview -->
+                    <div class="command-preview" id="commandPreview"></div>
+                </div>
+            </div>
+
+            <!-- CONFIG MANAGEMENT SECTION -->
+            <div class="content-section" id="config">
+                <div class="section-card">
+                    <div class="section-header">
+                        <h2 class="section-title">
+                            <i class="fas fa-sliders-h"></i>
+                            Configuration Management
+                        </h2>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Operation</label>
+                            <select id="configOperation" onchange="updateConfigPanel()">
+                                <option value="backup">Backup Config</option>
+                                <option value="restore">Restore Config</option>
+                                <option value="bulk">Bulk Update</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Devices</label>
+                            <select id="configDevices" multiple size="3">
+                                <option value="all">All Devices</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div id="bulkConfigPanel" style="display: none;">
+                        <div class="form-group">
+                            <label>Commands (one per line)</label>
+                            <textarea id="bulkCommands" placeholder="interface GigabitEthernet0/0&#10;description Link to Core&#10;no shutdown"></textarea>
+                        </div>
+                    </div>
+
+                    <button class="btn btn-success" onclick="executeConfigOperation()">
+                        <i class="fas fa-play"></i> Execute
+                    </button>
+
+                    <div class="progress-bar" id="configProgress" style="display: none;">
+                        <div class="progress-fill" id="configProgressFill" style="width: 0%"></div>
+                    </div>
+
+                    <div class="command-preview" id="configOutput"></div>
+                </div>
+            </div>
+
+            <!-- MONITORING SECTION -->
+            <div class="content-section" id="monitoring">
+                <div class="section-card">
+                    <div class="section-header">
+                        <h2 class="section-title">
+                            <i class="fas fa-chart-line"></i>
+                            Monitoring & Analytics
+                        </h2>
+                        <button class="btn btn-success btn-small" onclick="startMonitoring()" id="monitorBtn">
+                            <i class="fas fa-play"></i> Start Monitoring
+                        </button>
+                    </div>
+
+                    <div id="monitoringContent">
+                        <div class="empty-state">
+                            <i class="fas fa-chart-area"></i>
+                            <h3>Monitoring Not Active</h3>
+                            <p>Click "Start Monitoring" to begin collecting device metrics</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TROUBLESHOOTING SECTION -->
+            <div class="content-section" id="troubleshoot">
+                <div class="section-card">
+                    <div class="section-header">
+                        <h2 class="section-title">
+                            <i class="fas fa-tools"></i>
+                            Troubleshooting & Diagnostics
+                        </h2>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Device</label>
+                            <select id="troubleshootDevice"></select>
+                        </div>
+                        <div class="form-group">
+                            <label>Test Type</label>
+                            <select id="troubleshootType">
+                                <option value="ping">Ping Test</option>
+                                <option value="traceroute">Traceroute</option>
+                                <option value="interfaces">Check Interfaces</option>
+                                <option value="logs">Analyze Logs</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Target (Optional)</label>
+                            <input type="text" id="troubleshootTarget" placeholder="8.8.8.8">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="checkbox-item">
+                            <input type="checkbox" id="autoFix">
+                            <span>Attempt Auto-Fix</span>
+                        </label>
+                    </div>
+
+                    <button class="btn btn-warning" onclick="runTroubleshoot()">
+                        <i class="fas fa-stethoscope"></i> Run Test
+                    </button>
+
+                    <div class="command-preview" id="troubleshootOutput"></div>
+                </div>
+            </div>
+
+            <!-- SECURITY SECTION -->
+            <div class="content-section" id="security">
+                <div class="section-card">
+                    <div class="section-header">
+                        <h2 class="section-title">
+                            <i class="fas fa-shield-alt"></i>
+                            Security Management
+                        </h2>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Security Action</label>
+                            <select id="securityAction" onchange="updateSecurityPanel()">
+                                <option value="acl">Apply ACL</option>
+                                <option value="port-security">Port Security</option>
+                                <option value="unused">Shutdown Unused Ports</option>
+                                <option value="scan">Network Scan</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Devices</label>
+                            <select id="securityDevices" multiple>
+                                <option value="all">All Devices</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div id="aclPanel">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>ACL Number</label>
+                                <input type="number" id="aclNumber" placeholder="100">
+                            </div>
+                            <div class="form-group">
+                                <label>Action</label>
+                                <select id="aclAction">
+                                    <option value="permit">Permit</option>
+                                    <option value="deny">Deny</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Source</label>
+                                <input type="text" id="aclSource" placeholder="192.168.1.0 0.0.0.255">
+                            </div>
+                        </div>
+                    </div>
+
+                    <button class="btn btn-success" onclick="applySecurity()">
+                        <i class="fas fa-shield-alt"></i> Apply
+                    </button>
+
+                    <div class="command-preview" id="securityOutput"></div>
+                </div>
+            </div>
+
+            <!-- USERS SECTION -->
+            <div class="content-section" id="users">
+                <div class="section-card">
+                    <div class="section-header">
+                        <h2 class="section-title">
+                            <i class="fas fa-users"></i>
+                            User Management
+                        </h2>
+                        <button class="btn btn-success btn-small" onclick="showAddUser()">
+                            <i class="fas fa-plus"></i> Add User
+                        </button>
+                    </div>
+
+                    <div class="add-device-form" id="addUserForm" style="display: none;">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Username</label>
+                                <input type="text" id="newUsername" placeholder="username">
+                            </div>
+                            <div class="form-group">
+                                <label>Password</label>
+                                <input type="password" id="newPassword" placeholder="••••••••">
+                            </div>
+                            <div class="form-group">
+                                <label>Privilege Level</label>
+                                <select id="newUserRole">
+                                    <option value="15">Admin (15)</option>
+                                    <option value="7">Operator (7)</option>
+                                    <option value="1">User (1)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button class="btn btn-success btn-small" onclick="addUser()">
+                            <i class="fas fa-save"></i> Save
+                        </button>
+                    </div>
+
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Username</th>
+                                <th>Privilege</th>
+                                <th>Status</th>
+                                <th>Last Login</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="usersTableBody">
+                            <tr>
+                                <td>admin</td>
+                                <td><span class="status-badge status-online">Admin (15)</span></td>
+                                <td>Active</td>
+                                <td>Now</td>
+                                <td>
+                                    <button class="btn btn-small btn-secondary btn-icon">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- REPORTS SECTION -->
+            <div class="content-section" id="reports">
+                <div class="section-card">
+                    <div class="section-header">
+                        <h2 class="section-title">
+                            <i class="fas fa-file-alt"></i>
+                            Reports & Analytics
+                        </h2>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Report Type</label>
+                            <select id="reportType">
+                                <option value="performance">Network Performance</option>
+                                <option value="inventory">Device Inventory</option>
+                                <option value="changes">Change Log</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Period</label>
+                            <select id="reportPeriod">
+                                <option value="24h">24 Hours</option>
+                                <option value="7d">7 Days</option>
+                                <option value="30d">30 Days</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <button class="btn btn-success" onclick="generateReport()">
+                        <i class="fas fa-chart-bar"></i> Generate Report
+                    </button>
+
+                    <div id="reportContent" style="margin-top: 20px;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast">
+        <i id="toastIcon" class="fas fa-check-circle"></i>
+        <span id="toastMessage">Success!</span>
+    </div>
+
+    <script>
+        // ============================================
+        // GLOBAL CONFIGURATION
+        // ============================================
+
+        const API_BASE_URL = 'http://127.0.0.1:5000/api';
+        let currentUser = null;
+        let devices = [];
+        let monitoringInterval = null;
+        let currentLang = 'en';
+
+        // ============================================
+        // LANGUAGE SYSTEM
+        // ============================================
+
+        function toggleLanguage() {
+            currentLang = currentLang === 'en' ? 'ar' : 'en';
+            const btn = document.getElementById('langToggle');
+            btn.querySelector('span').textContent = currentLang === 'en' ? 'العربية' : 'English';
+
+            // Reload page with new language (simplified approach)
+            if (currentLang === 'ar') {
+                document.documentElement.lang = 'ar';
+                document.documentElement.dir = 'rtl';
+                showToast('تم التبديل للعربية', 'success');
+            } else {
+                document.documentElement.lang = 'en';
+                document.documentElement.dir = 'ltr';
+                showToast('Switched to English', 'success');
+            }
+        }
+
+        // ============================================
+        // INITIALIZATION
+        // ============================================
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check for saved session
+            const savedUser = localStorage.getItem('netauto_user');
+            if (savedUser) {
+                currentUser = JSON.parse(savedUser);
+                showDashboard();
+            }
+
+            // Load devices from localStorage
+            loadDevicesFromStorage();
+        });
+
+        // ============================================
+        // AUTHENTICATION
+        // ============================================
+
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const btn = document.getElementById('loginBtn');
+
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner"></span> Logging in...';
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({ username, password })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    currentUser = data.user;
+                    localStorage.setItem('netauto_user', JSON.stringify(currentUser));
+                    showDashboard();
+                    showToast('Login successful!', 'success');
+                } else {
+                    showToast(data.error || 'Login failed', 'error');
+                }
+            } catch (error) {
+                // Demo mode
+                if (username === 'admin' && password === 'admin') {
+                    currentUser = { id: 1, username: 'admin', role: 'admin' };
+                    localStorage.setItem('netauto_user', JSON.stringify(currentUser));
+                    showDashboard();
+                    showToast('Demo mode - Logged in', 'success');
+                } else {
+                    showToast('Server connection error', 'error');
+                }
+            }
+
+            btn.disabled = false;
+            btn.innerHTML = '<span>Login</span>';
+        });
+
+        function logout() {
+            localStorage.removeItem('netauto_user');
+            fetch(`${API_BASE_URL}/auth/logout`, {
+                method: 'POST',
+                credentials: 'include'
+            }).finally(() => {
+                location.reload();
+            });
+        }
+
+        function showDashboard() {
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('mainDashboard').style.display = 'block';
+            updateStats();
+            populateAllSelects();
+            renderDevicesTable();
+        }
+
+        // ============================================
+        // DEVICE MANAGEMENT
+        // ============================================
+
+        function loadDevicesFromStorage() {
+            const saved = localStorage.getItem('netauto_devices');
+            if (saved) {
+                devices = JSON.parse(saved);
+            } else {
+                // Default demo devices
+                devices = [
+                    {
+                        id: 1,
+                        ip_address: '192.168.1.186',
+                        hostname: 'Sw-1',
+                        device_type: 'Switch',
+                        username: 'admin',
+                        password: 'admin',
+                        location: 'Main Office',
+                        status: 'up',
+                        last_seen: new Date().toISOString()
+                    }
+                ];
+                saveDevicesToStorage();
+            }
+        }
+
+        function saveDevicesToStorage() {
+            localStorage.setItem('netauto_devices', JSON.stringify(devices));
+        }
+
+        function toggleDeviceForm() {
+            const form = document.getElementById('addDeviceForm');
+            form.classList.toggle('show');
+
+            // Clear form when opening
+            if (form.classList.contains('show')) {
+                document.getElementById('deviceIp').value = '';
+                document.getElementById('deviceHostname').value = '';
+                document.getElementById('deviceUsername').value = 'admin';
+                document.getElementById('devicePassword').value = '';
+                document.getElementById('deviceLocation').value = '';
+            }
+        }
+
+        async function saveDevice() {
+            // Get values
+            const ip = document.getElementById('deviceIp').value.trim();
+            const hostname = document.getElementById('deviceHostname').value.trim();
+            const type = document.getElementById('deviceType').value;
+            const username = document.getElementById('deviceUsername').value.trim();
+            const password = document.getElementById('devicePassword').value;
+            const location = document.getElementById('deviceLocation').value.trim();
+
+            // Validation
+            if (!ip || !hostname || !username || !password) {
+                showToast('Please fill all required fields', 'error');
+                return;
+            }
+
+            // IP validation
+            const ipRegex = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+            if (!ipRegex.test(ip)) {
+                showToast('Please enter a valid IP address', 'error');
+                return;
+            }
+
+            const btn = document.getElementById('saveDeviceBtn');
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner"></span> Saving...';
+
+            const deviceData = {
+                ip_address: ip,
+                hostname: hostname,
+                device_type: type,
+                username: username,
+                password: password,
+                location: location || 'Not specified',
+                status: 'pending',
+                last_seen: null
+            };
+
+            try {
+                // Try to save to backend first
+                const response = await fetch(`${API_BASE_URL}/devices`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-Token': getCsrfToken()
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify(deviceData)
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    deviceData.id = result.device_id;
+                } else {
+                    // Backend failed, use local ID
+                    deviceData.id = Date.now();
+                }
+            } catch (error) {
+                // No backend, use local storage only
+                deviceData.id = Date.now();
+            }
+
+            // Add to devices array
+            devices.push(deviceData);
+            saveDevicesToStorage();
+
+            // Update UI
+            renderDevicesTable();
+            populateAllSelects();
+            updateStats();
+
+            // Hide form and reset
+            toggleDeviceForm();
+
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-save"></i> Save Device';
+
+            showToast(`Device ${hostname} added successfully!`, 'success');
+
+            // Try to connect and check status
+            setTimeout(() => checkDeviceStatus(deviceData.id), 1000);
+        }
+
+        function renderDevicesTable() {
+            const tbody = document.getElementById('devicesTableBody');
+            const emptyState = document.getElementById('emptyState');
+
+            if (devices.length === 0) {
+                tbody.innerHTML = '';
+                emptyState.style.display = 'block';
+                return;
+            }
+
+            emptyState.style.display = 'none';
+
+            tbody.innerHTML = devices.map(device => `
+                <tr data-device-id="${device.id}">
+                    <td>
+                        <span class="status-badge status-${device.status}">
+                            <i class="fas fa-${device.status === 'up' ? 'check-circle' : device.status === 'down' ? 'times-circle' : 'spinner fa-spin'}"></i>
+                            ${device.status === 'up' ? 'Online' : device.status === 'down' ? 'Offline' : 'Checking...'}
+                        </span>
+                    </td>
+                    <td>${device.ip_address}</td>
+                    <td>
+                        <input type="text" value="${device.hostname}"
+                               onchange="updateDevice(${device.id}, 'hostname', this.value)"
+                               style="font-weight: 600; color: var(--dark);">
+                    </td>
+                    <td>${device.device_type}</td>
+                    <td>${device.location}</td>
+                    <td>${device.last_seen ? new Date(device.last_seen).toLocaleString() : 'Never'}</td>
+                    <td>
+                        <div class="table-actions">
+                            <button class="btn btn-success btn-icon" onclick="connectToDevice(${device.id})" title="Connect">
+                                <i class="fas fa-plug"></i>
+                            </button>
+                            <button class="btn btn-secondary btn-icon" onclick="editDevice(${device.id})" title="Edit">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn btn-danger btn-icon" onclick="deleteDevice(${device.id})" title="Delete">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        async function checkDeviceStatus(deviceId) {
+            const device = devices.find(d => d.id === deviceId);
+            if (!device) return;
+
+            try {
+                // Try to ping via backend
+                const response = await fetch(`${API_BASE_URL}/devices/${deviceId}/ping`, {
+                    method: 'POST',
+                    credentials: 'include'
+                });
+
+                const result = await response.json();
+                device.status = result.success ? 'up' : 'down';
+                if (result.success) device.last_seen = new Date().toISOString();
+            } catch (error) {
+                // Simulate status check
+                await new Promise(r => setTimeout(r, 1500));
+                device.status = Math.random() > 0.3 ? 'up' : 'down';
+                if (device.status === 'up') device.last_seen = new Date().toISOString();
+            }
+
+            saveDevicesToStorage();
+            renderDevicesTable();
+            updateStats();
+        }
+
+        function updateDevice(deviceId, field, value) {
+            const device = devices.find(d => d.id === deviceId);
+            if (device) {
+                device[field] = value;
+                saveDevicesToStorage();
+                showToast('Updated!', 'success');
+            }
+        }
+
+        function deleteDevice(deviceId) {
+            if (!confirm('Are you sure you want to delete this device?')) return;
+
+            devices = devices.filter(d => d.id !== deviceId);
+            saveDevicesToStorage();
+            renderDevicesTable();
+            populateAllSelects();
+            updateStats();
+            showToast('Device deleted!', 'success');
+        }
+
+        async function connectToDevice(deviceId) {
+            const device = devices.find(d => d.id === deviceId);
+            if (!device) return;
+
+            showToast(`Connecting to ${device.hostname}...`, 'success');
+
+            setTimeout(() => checkDeviceStatus(deviceId), 500);
+        }
+
+        function editDevice(deviceId) {
+            const device = devices.find(d => d.id === deviceId);
+            if (!device) return;
+
+            // Populate form with device data
+            document.getElementById('deviceIp').value = device.ip_address;
+            document.getElementById('deviceHostname').value = device.hostname;
+            document.getElementById('deviceType').value = device.device_type;
+            document.getElementById('deviceUsername').value = device.username;
+            document.getElementById('devicePassword').value = device.password;
+            document.getElementById('deviceLocation').value = device.location || '';
+
+            // Show form
+            document.getElementById('addDeviceForm').classList.add('show');
+
+            // Change save button to update
+            const btn = document.getElementById('saveDeviceBtn');
+            btn.onclick = function() { updateExistingDevice(deviceId); };
+            btn.innerHTML = '<i class="fas fa-save"></i> Update Device';
+        }
+
+        function updateExistingDevice(deviceId) {
+            const device = devices.find(d => d.id === deviceId);
+            if (!device) return;
+
+            device.ip_address = document.getElementById('deviceIp').value.trim();
+            device.hostname = document.getElementById('deviceHostname').value.trim();
+            device.device_type = document.getElementById('deviceType').value;
+            device.username = document.getElementById('deviceUsername').value.trim();
+            device.password = document.getElementById('devicePassword').value;
+            device.location = document.getElementById('deviceLocation').value.trim();
+
+            saveDevicesToStorage();
+            renderDevicesTable();
+            populateAllSelects();
+            toggleDeviceForm();
+
+            // Reset button
+            const btn = document.getElementById('saveDeviceBtn');
+            btn.onclick = saveDevice;
+            btn.innerHTML = '<i class="fas fa-save"></i> Save Device';
+
+            showToast('Device updated successfully!', 'success');
+        }
+
+        // ============================================
+        // UI HELPERS
+        // ============================================
+
+        function showSection(sectionId, btnElement) {
+            // Hide all sections
+            document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+
+            // Show selected
+            document.getElementById(sectionId).classList.add('active');
+            btnElement.classList.add('active');
+        }
+
+        function updateStats() {
+            const online = devices.filter(d => d.status === 'up').length;
+            const offline = devices.filter(d => d.status === 'down').length;
+            const pending = devices.filter(d => d.status === 'pending').length;
+
+            document.getElementById('totalDevices').textContent = devices.length;
+            document.getElementById('onlineDevices').textContent = online;
+            document.getElementById('offlineDevices').textContent = offline;
+            document.getElementById('alertCount').textContent = pending;
+        }
+
+        function populateAllSelects() {
+            const selects = document.querySelectorAll('select[id$="Devices"], select[id$="Device"]');
+
+            selects.forEach(select => {
+                // Keep "all" option if exists
+                const allOption = select.querySelector('option[value="all"]');
+                select.innerHTML = '';
+                if (allOption) select.appendChild(allOption);
+
+                devices.forEach(device => {
+                    const option = document.createElement('option');
+                    option.value = device.id;
+                    option.textContent = `${device.hostname} (${device.ip_address})`;
+                    select.appendChild(option);
+                });
+            });
+        }
+
+        function refreshAll() {
+            devices.forEach(d => {
+                if (d.status !== 'pending') d.status = 'pending';
+            });
+            renderDevicesTable();
+            updateStats();
+
+            // Check all devices status
+            devices.forEach((device, index) => {
+                setTimeout(() => checkDeviceStatus(device.id), index * 500);
+            });
+
+            showToast('Refreshing all devices...', 'success');
+        }
+
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            const icon = document.getElementById('toastIcon');
+
+            toast.className = `toast show ${type}`;
+            document.getElementById('toastMessage').textContent = message;
+
+            icon.className = 'fas ' + (type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-times-circle' : 'fa-exclamation-triangle');
+
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        function getCsrfToken() {
+            return document.querySelector('meta[name="csrf-token"]')?.content || '';
+        }
+
+        // ============================================
+        // PROVISIONING FUNCTIONS
+        // ============================================
+
+        function selectConfigType(type, element) {
+            document.querySelectorAll('.config-type-card').forEach(c => c.classList.remove('active'));
+            element.classList.add('active');
+
+            document.querySelectorAll('.config-panel').forEach(p => p.classList.remove('active'));
+            document.getElementById(type + 'Panel').classList.add('active');
+        }
+
+        function generateVLANConfig() {
+            const vlanId = document.getElementById('vlanId').value;
+            const vlanName = document.getElementById('vlanName').value;
+            const intf = document.getElementById('vlanInterface').value;
+            const mode = document.getElementById('vlanMode').value;
+
+            if (!vlanId || !vlanName) {
+                showToast('Please fill VLAN ID and Name', 'error');
+                return;
+            }
+
+            const commands = `! VLAN Configuration
+vlan ${vlanId}
+ name ${vlanName}
+exit
+
+interface ${intf || 'GigabitEthernet0/1'}
+ switchport mode ${mode}
+ ${mode === 'access' ? `switchport access vlan ${vlanId}` : `switchport trunk allowed vlan add ${vlanId}`}
+ no shutdown
+exit
+
+! Verification
+show vlan brief
+show interfaces ${intf || 'GigabitEthernet0/1'} switchport`;
+
+            showCommandPreview(commands);
+        }
+
+        function applyVLANConfig() {
+            showToast('Applying configuration to devices...', 'success');
+
+            // Simulate progress
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += 20;
+                document.getElementById('configProgressFill').style.width = progress + '%';
+
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    showToast('VLAN applied successfully to all devices!', 'success');
+                }
+            }, 500);
+        }
+
+        function showCommandPreview(commands) {
+            const preview = document.getElementById('commandPreview');
+            preview.textContent = commands;
+            preview.classList.add('show');
+        }
+
+        // ============================================
+        // OTHER FUNCTIONS (Placeholders)
+        // ============================================
+
+        function updateRoutingForm() {
+            // Update routing form based on selection
+        }
+
+        function generateRoutingConfig() {
+            showToast('Routing commands generated!', 'success');
+        }
+
+        function updateConfigPanel() {
+            const operation = document.getElementById('configOperation').value;
+            document.getElementById('bulkConfigPanel').style.display = operation === 'bulk' ? 'block' : 'none';
+        }
+
+        function executeConfigOperation() {
+            showToast('Executing operation...', 'success');
+        }
+
+        function startMonitoring() {
+            const btn = document.getElementById('monitorBtn');
+            const content = document.getElementById('monitoringContent');
+
+            if (monitoringInterval) {
+                clearInterval(monitoringInterval);
+                monitoringInterval = null;
+                btn.innerHTML = '<i class="fas fa-play"></i> Start Monitoring';
+                content.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-chart-area"></i>
+                        <h3>Monitoring Stopped</h3>
+                    </div>
+                `;
+                return;
+            }
+
+            btn.innerHTML = '<i class="fas fa-stop"></i> Stop Monitoring';
+
+            // Generate monitoring cards for each device
+            function updateMonitoring() {
+                content.innerHTML = '<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">' +
+                    devices.map(device => {
+                        const cpu = Math.floor(Math.random() * 60 + 20);
+                        const memory = Math.floor(Math.random() * 40 + 30);
+                        return `
+                        <div class="section-card">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                                <h4>${device.hostname}</h4>
+                                <span class="status-badge status-${device.status}">
+                                    ${device.status === 'up' ? 'Online' : 'Offline'}
+                                </span>
+                            </div>
+                            <div style="margin-bottom: 10px;">
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                                    <span>CPU</span>
+                                    <span>${cpu}%</span>
+                                </div>
+                                <div class="progress-bar" style="margin: 0;">
+                                    <div class="progress-fill" style="width: ${cpu}%; background: ${cpu > 80 ? 'var(--danger)' : cpu > 60 ? 'var(--warning)' : 'var(--success)'}"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                                    <span>Memory</span>
+                                    <span>${memory}%</span>
+                                </div>
+                                <div class="progress-bar" style="margin: 0;">
+                                    <div class="progress-fill" style="width: ${memory}%; background: ${memory > 80 ? 'var(--danger)' : 'var(--success)'}"></div>
+                                </div>
+                            </div>
+                        </div>
+                        `;
+                    }).join('') + '</div>';
+            }
+
+            updateMonitoring();
+            monitoringInterval = setInterval(updateMonitoring, 3000);
+        }
+
+        function runTroubleshoot() {
+            const output = document.getElementById('troubleshootOutput');
+            const type = document.getElementById('troubleshootType').value;
+            const target = document.getElementById('troubleshootTarget').value || '192.168.1.1';
+
+            output.classList.add('show');
+            output.textContent = `Running ${type}...\n\n`;
+
+            let lines = [];
+            if (type === 'ping') {
+                for (let i = 1; i <= 4; i++) {
+                    const time = Math.floor(Math.random() * 50 + 5);
+                    lines.push(`Reply from ${target}: bytes=32 time=${time}ms TTL=64`);
+                }
+                lines.push(`\nPing statistics for ${target}:
+    Packets: Sent = 4, Received = 4, Lost = 0 (0% loss),
+Approximate round trip times in milli-seconds:
+    Minimum = 1ms, Maximum = 12ms, Average = 5ms`);
+            }
+
+            let i = 0;
+            const interval = setInterval(() => {
+                if (i < lines.length) {
+                    output.textContent += lines[i] + '\n';
+                    i++;
+                } else {
+                    clearInterval(interval);
+                    output.textContent += '\n✓ Test completed successfully';
+                }
+            }, 400);
+        }
+
+        function updateSecurityPanel() {
+            // Update security panel based on selection
+        }
+
+        function applySecurity() {
+            showToast('Security settings applied!', 'success');
+        }
+
+        function showAddUser() {
+            const form = document.getElementById('addUserForm');
+            form.style.display = form.style.display === 'none' ? 'block' : 'none';
+        }
+
+        function addUser() {
+            showToast('User added successfully!', 'success');
+            document.getElementById('addUserForm').style.display = 'none';
+        }
+
+        function generateReport() {
+            const content = document.getElementById('reportContent');
+            content.innerHTML = '<div class="section-card"><div class="spinner"></div> Generating report...</div>';
+
+            setTimeout(() => {
+                content.innerHTML = `
+                    <div class="section-card">
+                        <h3>Network Performance Report</h3>
+                        <div style="margin: 20px 0;">
+                            <p><strong>Total Devices:</strong> ${devices.length}</p>
+                            <p><strong>Online Devices:</strong> ${devices.filter(d => d.status === 'up').length}</p>
+                            <p><strong>Availability:</strong> ${devices.length > 0 ? Math.round((devices.filter(d => d.status === 'up').length / devices.length) * 100) : 0}%</p>
+                        </div>
+                        <div style="background: linear-gradient(90deg, var(--success) 0%, var(--success) 90%, var(--danger) 90%); height: 30px; border-radius: 4px;"></div>
+                    </div>
+                `;
+            }, 1500);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,2537 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="نظام SIM-NET لإدارة الشبكات الذكي">
+    <meta name="theme-color" content="#2563eb">
+    <title data-i18n="app.title">SIM-NET | نظام إدارة الشبكات الذكي</title>
+
+    <!-- Preconnect for performance -->
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+    <link rel="preconnect" href="https://unpkg.com">
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js" defer></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" defer></script>
+</head>
+<body data-theme="dark" data-color="blue">
+    <!-- Full Screen Background Animation -->
+    <div class="dashboard-bg" aria-hidden="true">
+        <div class="bg-grid"></div>
+        <div class="bg-glow"></div>
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+        <div class="particles" id="bg-particles"></div>
+        <div class="scanline"></div>
+    </div>
+
+    <!-- Skip to main content for accessibility -->
+    <a href="#main-content" class="skip-link" data-i18n="nav.skip">انتقل إلى المحتوى الرئيسي</a>
+
+    <!-- Main Application -->
+    <div id="main-app" class="main-app">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar" role="navigation" aria-label="القائمة الرئيسية">
+            <header class="sidebar-header">
+                <i class="fas fa-network-wired" aria-hidden="true"></i>
+                <span>SIM-NET</span>
+            </header>
+
+            <nav class="sidebar-nav">
+    <ul role="menubar">
+        <li role="none">
+            <a href="#dashboard" class="nav-item active" data-page="dashboard" role="menuitem">
+                <i class="fas fa-tachometer-alt" aria-hidden="true"></i>
+                <span data-i18n="nav.dashboard">لوحة التحكم</span>
+            </a>
+        </li>
+        <li role="none">
+            <a href="#devices" class="nav-item" data-page="devices" role="menuitem">
+                <i class="fas fa-server" aria-hidden="true"></i>
+                <span data-i18n="nav.devices">الأجهزة</span>
+            </a>
+        </li>
+        <li role="none">
+            <a href="#monitoring" class="nav-item" data-page="monitoring" role="menuitem">
+                <i class="fas fa-heartbeat" aria-hidden="true"></i>
+                <span data-i18n="nav.monitoring">المراقبة</span>
+            </a>
+        </li>
+        <li role="none">
+            <a href="#security" class="nav-item" data-page="security" role="menuitem">
+                <i class="fas fa-shield-alt" aria-hidden="true"></i>
+                <span data-i18n="nav.security">الأمان</span>
+            </a>
+        </li>
+        <li role="none">
+            <a href="#performance" class="nav-item" data-page="performance" role="menuitem">
+                <i class="fas fa-chart-line" aria-hidden="true"></i>
+                <span data-i18n="nav.performance">الأداء</span>
+            </a>
+        </li>
+        <li role="none">
+            <a href="#ai-analysis" class="nav-item" data-page="ai-analysis" role="menuitem">
+                <i class="fas fa-brain" aria-hidden="true"></i>
+                <span data-i18n="nav.ai">تحليل AI</span>
+            </a>
+        </li>
+        <li role="none">
+            <a href="#reports" class="nav-item" data-page="reports" role="menuitem">
+                <i class="fas fa-file-alt" aria-hidden="true"></i>
+                <span data-i18n="nav.reports">التقارير</span>
+            </a>
+        </li>
+        <li role="none">
+            <a href="#logs" class="nav-item" data-page="logs" role="menuitem">
+                <i class="fas fa-history" aria-hidden="true"></i>
+                <span data-i18n="nav.logs">السجلات</span>
+            </a>
+        </li>
+
+        <!-- <li role="none">
+            <a href="#topology" class="nav-item" data-page="topology" role="menuitem">
+                <i class="fas fa-project-diagram" aria-hidden="true"></i>
+                <span data-i18n="nav.topology">طوبولوجيا الشبكة</span>
+            </a>
+        </li> -->
+
+        <li role="none">
+            <a href="ai-agent.html" class="nav-item" role="menuitem">
+                <i class="fas fa-robot" aria-hidden="true"></i>
+                <span data-i18n="nav.ai">وكيل الذكاء الاصطناعي</span>
+            </a>
+        </li>
+        <li role="none">
+            <a href="remote-desktop.html" class="nav-item" role="menuitem">
+                <i class="fas fa-desktop" aria-hidden="true"></i>
+                <span data-i18n="nav.remote-desktop">سطح المكتب البعيد للخوادم </span>
+            </a>
+        </li>
+        <li role="none">
+            <a href="telnet-terminal.html" class="nav-item" role="menuitem">
+                <i class="fas fa-terminal" aria-hidden="true"></i>
+                <span data-i18n="nav.remote-device">الاتصال بالاجهزه عن بعد </span>
+            </a>
+        </li>
+
+        <!-- جديد: رابط Automation -->
+        <li role="none">
+            <a href="automation.html" class="nav-item" role="menuitem">
+                <i class="fas fa-cogs" aria-hidden="true"></i>
+                <span data-i18n="nav.automation">الاتمته</span>
+            </a>
+        </li>
+
+<!--        <li role="none">-->
+<!--            <a href="#users" class="nav-item" data-page="users" role="menuitem">-->
+<!--                <i class="fas fa-users" aria-hidden="true"></i>-->
+<!--                <span data-i18n="nav.users">المستخدمين</span>-->
+<!--            </a>-->
+<!--        </li>-->
+
+        <li role="none">
+            <a href="#settings" class="nav-item" data-page="settings" role="menuitem">
+                <i class="fas fa-cog" aria-hidden="true"></i>
+                <span data-i18n="nav.settings">الإعدادات</span>
+            </a>
+        </li>
+        <li role="none">
+            <a href="#about" class="nav-item" data-page="about" role="menuitem">
+                <i class="fas fa-info-circle" aria-hidden="true"></i>
+                <span data-i18n="nav.about">عن النظام</span>
+            </a>
+        </li>
+    </ul>
+</nav>
+
+            <footer class="sidebar-footer">
+                <div class="user-info">
+                    <i class="fas fa-user-circle" aria-hidden="true"></i>
+                    <span id="current-user">Admin</span>
+                </div>
+                <button id="language-toggle" class="btn btn-sm btn-secondary" aria-label="تغيير اللغة">
+                    <i class="fas fa-globe"></i> EN
+                </button>
+            </footer>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main id="main-content" class="main-content">
+            <!-- Header -->
+            <header class="header">
+                <h2 id="page-title" data-i18n="pages.dashboard">لوحة التحكم</h2>
+                <div class="header-actions">
+                    <button id="theme-toggle" class="btn btn-icon" aria-label="تبديل الوضع">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                    <div class="system-status" aria-live="polite">
+                        <span class="status-indicator online" aria-hidden="true"></span>
+                        <span data-i18n="system.online">النظام يعمل</span>
+                    </div>
+                </div>
+            </header>
+<!-- Dashboard Page -->
+<section id="dashboard-page" class="page active" aria-labelledby="dashboard-title">
+    <h2 id="dashboard-title" class="visually-hidden" data-i18n="pages.dashboard"></h2>
+
+    <!-- Stats Grid - Linked to Devices Data -->
+    <div class="stats-grid" role="region" aria-label="إحصائيات سريعة" id="dashboard-stats">
+        <article class="stat-card clickable" onclick="openStatsModal('total-devices-modal')">
+            <div class="stat-icon blue" aria-hidden="true">
+                <i class="fas fa-server"></i>
+            </div>
+            <div class="stat-info">
+                <h3 id="total-devices">0</h3>
+                <p data-i18n="stats.totalDevices">إجمالي الأجهزة</p>
+            </div>
+        </article>
+
+        <article class="stat-card clickable" onclick="openStatsModal('online-devices-modal')">
+            <div class="stat-icon green" aria-hidden="true">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <div class="stat-info">
+                <h3 id="online-devices">0</h3>
+                <p data-i18n="stats.onlineDevices">أجهزة متصلة</p>
+            </div>
+        </article>
+
+        <article class="stat-card clickable" onclick="openStatsModal('offline-devices-modal')">
+            <div class="stat-icon red" aria-hidden="true">
+                <i class="fas fa-times-circle"></i>
+            </div>
+            <div class="stat-info">
+                <h3 id="offline-devices">0</h3>
+                <p data-i18n="stats.offlineDevices">أجهزة غير متصلة</p>
+            </div>
+        </article>
+
+        <article class="stat-card clickable" onclick="openStatsModal('security-alerts-modal')">
+            <div class="stat-icon orange" aria-hidden="true">
+                <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <div class="stat-info">
+                <h3 id="security-alerts">0</h3>
+                <p data-i18n="stats.securityAlerts">تنبيهات الأمان</p>
+            </div>
+        </article>
+    </div>
+
+    <!-- Dashboard Grid -->
+    <div class="dashboard-grid">
+        <article class="card">
+            <header class="card-header">
+                <h3><i class="fas fa-map-marked-alt" aria-hidden="true"></i> <span data-i18n="dashboard.deviceMap">خريطة الأجهزة</span></h3>
+            </header>
+            <div class="card-body">
+                <div id="device-map" class="device-map" role="img" aria-label="خريطة توضح مواقع الأجهزة"></div>
+            </div>
+        </article>
+
+        <article class="card">
+            <header class="card-header">
+                <h3><i class="fas fa-chart-pie" aria-hidden="true"></i> <span data-i18n="dashboard.deviceStatus">حالة الأجهزة</span></h3>
+            </header>
+            <div class="card-body">
+                <canvas id="device-status-chart" aria-label="رسم بياني دائري يوضح حالة الأجهزة"></canvas>
+            </div>
+        </article>
+    </div>
+
+    <!-- Recent Activity Section -->
+    <div class="dashboard-grid">
+        <article class="card">
+            <header class="card-header">
+                <h3><i class="fas fa-bell" aria-hidden="true"></i> <span data-i18n="dashboard.recentAlerts">التنبيهات الأخيرة</span></h3>
+                <button class="btn btn-sm btn-secondary" onclick="loadDashboardData()" title="تحديث">
+                    <i class="fas fa-sync-alt"></i>
+                </button>
+            </header>
+            <div class="card-body">
+                <div id="recent-alerts" class="list-container">
+                    <p class="empty-state">جاري تحميل التنبيهات...</p>
+                </div>
+            </div>
+        </article>
+
+        <article class="card">
+            <header class="card-header">
+                <h3><i class="fas fa-history" aria-hidden="true"></i> <span data-i18n="dashboard.recentLogs">الأنشطة الأخيرة</span></h3>
+            </header>
+            <div class="card-body">
+                <div id="recent-logs" class="list-container">
+                    <p class="empty-state">جاري تحميل السجلات...</p>
+                </div>
+            </div>
+        </article>
+    </div>
+
+    <!-- Usage Stats -->
+<div class="dashboard-grid">
+    <article class="card usage-stats-card">
+        <header class="card-header">
+            <h3><i class="fas fa-chart-bar" aria-hidden="true"></i> <span data-i18n="dashboard.usageStats">إحصائيات الاستخدام</span></h3>
+            <button class="btn btn-sm btn-secondary" onclick="refreshUsageStats()" title="تحديث">
+                <i class="fas fa-sync-alt"></i>
+            </button>
+        </header>
+        <div class="card-body">
+            <div class="usage-stats-container">
+                <div class="usage-chart-wrapper">
+                    <div class="usage-bars" id="usage-bars">
+                        <!-- سيتم ملؤها بالـ JavaScript -->
+                    </div>
+                    <div class="usage-labels" id="usage-labels">
+                        <!-- سيتم ملؤها بالـ JavaScript -->
+                    </div>
+                </div>
+                <div class="usage-progress-wrapper">
+                    <div class="progress-circle" id="health-circle" style="--progress: 0;">
+                        <svg viewBox="0 0 100 100">
+                            <circle class="progress-bg" cx="50" cy="50" r="45"></circle>
+                            <circle class="progress-fill" cx="50" cy="50" r="45"></circle>
+                        </svg>
+                        <div class="progress-content">
+                            <span class="progress-percent" id="health-percent">0%</span>
+                            <span class="progress-label" data-i18n="stats.healthy">صحية</span>
+                        </div>
+                    </div>
+                    <div class="health-details" id="health-details" style="margin-top: 15px; text-align: center; font-size: 12px; color: var(--text-secondary);">
+                        جاري الحساب...
+                    </div>
+                </div>
+            </div>
+
+            <!-- إحصائيات إضافية -->
+            <div class="usage-summary" id="usage-summary" style="margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border-color); display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; text-align: center;">
+                <!-- سيتم ملؤها بالـ JavaScript -->
+            </div>
+        </div>
+    </article>
+</div>
+</section>
+
+<!--     _____________________________       -->
+ <!-- Devices Page -->
+ <!-- Devices Page -->
+<section id="devices-page" class="page" aria-labelledby="devices-title">
+    <h2 id="devices-title" class="visually-hidden" data-i18n="pages.devices"></h2>
+
+    <div class="page-actions">
+        <button id="add-device-btn" class="btn btn-primary">
+            <i class="fas fa-plus" aria-hidden="true"></i> <span data-i18n="buttons.addDevice">إضافة جهاز</span>
+        </button>
+        <button id="refresh-devices-btn" class="btn btn-secondary">
+            <i class="fas fa-sync" aria-hidden="true"></i> <span data-i18n="buttons.refresh">تحديث</span>
+        </button>
+        <button id="ping-all-btn" class="btn btn-secondary" onclick="pingAllDevices()">
+            <i class="fas fa-network-wired" aria-hidden="true"></i> Ping All
+        </button>
+        <button id="clear-all-btn" class="btn btn-danger" onclick="clearAllDevices()">
+            <i class="fas fa-trash" aria-hidden="true"></i><span data-i18n="buttons.delete">مسح الكل </span>
+        </button>
+    </div>
+
+    <article class="card">
+        <header class="card-header">
+            <h3><i class="fas fa-server" aria-hidden="true"></i> <span data-i18n="devices.list">قائمة الأجهزة</span></h3>
+        </header>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table id="devices-table" class="data-table">
+                    <caption class="visually-hidden" data-i18n="devices.tableCaption">جدول يعرض قائمة بجميع الأجهزة المسجلة في النظام</caption>
+                    <thead>
+                        <tr>
+                            <th scope="col" data-i18n="table.ip">IP</th>
+                            <th scope="col" data-i18n="table.name">الاسم</th>
+                            <th scope="col" data-i18n="table.type">النوع</th>
+                            <th scope="col" data-i18n="table.vendor">الشركة</th>
+                            <th scope="col" data-i18n="table.status">الحالة</th>
+                            <th scope="col" data-i18n="table.lastSeen">آخر فحص</th>
+                            <th scope="col" data-i18n="table.actions">الإجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Dynamic content -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </article>
+</section>
+
+<!-- نموذج إضافة جهاز مع خيارات التحقق -->
+<div id="add-device-modal" class="modal">
+    <div class="modal-overlay"></div>
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 data-i18n="table.actions"><i class="fas fa-plus-circle"></i> إضافة جهاز جديد</h3>
+            <button class="add.newdevice" onclick="closeAllModals()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <form id="add-device-form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>IP Address *</label>
+                        <input type="text" name="ip_address" class="form-control" placeholder="192.168.1.1" required>
+                        <small style="color: #6b7280;">مثال: 192.168.1.100 (IP جهاز PNetLab)</small>
+                    </div>
+                    <div class="form-group">
+                        <label>Hostname *</label>
+                        <input type="text" name="hostname" class="form-control" placeholder="Router-1" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>نوع الجهاز</label>
+                        <select name="device_type" class="form-control">
+                            <option value="Router">Router</option>
+                            <option value="Switch">Switch</option>
+                            <option value="Firewall">Firewall</option>
+                            <option value="Server">Server</option>
+                            <option value="Access Point">Access Point</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>الشركة المصنعة</label>
+                        <select name="vendor" class="form-control">
+                            <option value="Cisco">Cisco</option>
+                            <option value="Juniper">Juniper</option>
+                            <option value="HP">HP</option>
+                            <option value="Huawei">Huawei</option>
+                            <option value="Dell">Dell</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>الموقع / المختبر</label>
+                    <input type="text" name="location" class="form-control" placeholder="PNetLab - Lab 1">
+                </div>
+
+                <div class="validation-section" style="background: #f8fafc; padding: 15px; border-radius: 8px; margin: 20px 0; border: 1px solid #e2e8f0;">
+                    <h4 style="margin-bottom: 15px; color: #1e293b; font-size: 1em;">
+                        <i class="fas fa-shield-alt" style="color: #2563eb;"></i> إعدادات الاتصال والتحقق (PNetLab)
+                    </h4>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>نوع الاتصال</label>
+                            <select name="connection_type" class="form-control" id="connection-type">
+                                <option value="telnet">Telnet (PNetLab Default)</option>
+                                <option value="ssh">SSH</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>المنفذ (Port)</label>
+                            <input type="number" name="port" class="form-control" value="23" id="connection-port">
+                            <small style="color: #6b7280;">Telnet: 23, SSH: 22</small>
+                        </div>
+                    </div>
+
+                    <div class="form-row credentials-section">
+                        <div class="form-group">
+                            <label>اسم المستخدم</label>
+                            <input type="text" name="username" class="form-control" placeholder="admin">
+                        </div>
+                        <div class="form-group">
+                            <label>كلمة المرور</label>
+                            <input type="password" name="password" class="form-control" placeholder="••••••••">
+                        </div>
+                    </div>
+
+                    <div class="form-check" style="margin-top: 10px;">
+                        <input type="checkbox" id="test-before-add" name="test_before_add" checked style="margin-left: 8px;">
+                        <label for="test-before-add" style="cursor: pointer; font-weight: 600; color: #dc2626;">
+                            <i class="fas fa-exclamation-triangle"></i> اختبار الاتصال قبل الإضافة (موصى به)
+                        </label>
+                    </div>
+                </div>
+
+                <div class="validation-result" id="validation-result" style="display: none; margin: 15px 0; padding: 15px; border-radius: 8px;"></div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" onclick="closeAllModals()">إلغاء</button>
+            <button type="button" class="btn btn-primary" id="validate-device-btn" onclick="validateAndAddDevice()">
+                <i class="fas fa-plug"></i> اختبار الاتصال وإضافة
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- نافذة تفاصيل الجهاز -->
+<div id="device-details-modal" class="modal">
+    <div class="modal-overlay" onclick="closeDeviceDetails()"></div>
+    <div class="modal-content" style="max-width: 900px; max-height: 90vh; overflow-y: auto;">
+        <div class="modal-header">
+            <h3 id="detail-device-name">
+                <i class="fas fa-server"></i> <span></span>
+                <span class="status-badge" id="detail-device-status"></span>
+            </h3>
+            <button class="modal-close" onclick="closeDeviceDetails()">&times;</button>
+        </div>
+        <div class="modal-body" id="device-details-content">
+            <!-- سيتم ملؤها ديناميكياً -->
+        </div>
+        <div class="modal-footer" style="display: flex; justify-content: space-between;">
+            <div>
+                <button class="btn btn-secondary" onclick="testDeviceConnection()">
+                    <i class="fas fa-plug"></i> اختبار الاتصال
+                </button>
+                <button class="btn btn-secondary" onclick="showDeviceConfig()">
+                    <i class="fas fa-file-code"></i> الإعدادات
+                </button>
+            </div>
+            <div>
+                <button class="btn btn-primary" onclick="editCurrentDevice()">
+                    <i class="fas fa-edit"></i> تعديل
+                </button>
+                <button class="btn btn-danger" onclick="deleteCurrentDevice()">
+                    <i class="fas fa-trash"></i> حذف
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- نافذة الإعدادات -->
+<div id="device-config-modal" class="modal">
+    <div class="modal-overlay" onclick="closeDeviceConfig()"></div>
+    <div class="modal-content" style="max-width: 800px; max-height: 80vh;">
+        <div class="modal-header">
+            <h3><i class="fas fa-file-code"></i> إعدادات الجهاز</h3>
+            <button class="modal-close" onclick="closeDeviceConfig()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <pre id="config-content" style="background: #1e293b; color: #e2e8f0; padding: 20px; border-radius: 8px; overflow-x: auto; font-family: 'Courier New', monospace; font-size: 0.85em; line-height: 1.5; direction: ltr; text-align: left;"></pre>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" onclick="downloadDeviceConfig()">
+                <i class="fas fa-download"></i> تحميل
+            </button>
+            <button class="btn btn-primary" onclick="closeDeviceConfig()">إغلاق</button>
+        </div>
+    </div>
+</div>
+
+<!-- نافذة التعديل -->
+<div id="edit-device-modal" class="modal">
+    <div class="modal-overlay"></div>
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3><i class="fas fa-edit"></i> تعديل الجهاز</h3>
+            <button class="modal-close" onclick="closeAllModals()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <form id="edit-device-form">
+                <input type="hidden" name="device_id">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>IP Address</label>
+                        <input type="text" name="ip_address" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Hostname</label>
+                        <input type="text" name="hostname" class="form-control" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>النوع</label>
+                        <select name="device_type" class="form-control">
+                            <option value="Router">Router</option>
+                            <option value="Switch">Switch</option>
+                            <option value="Firewall">Firewall</option>
+                            <option value="Server">Server</option>
+                            <option value="Access Point">Access Point</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>الشركة</label>
+                        <select name="vendor" class="form-control">
+                            <option value="Cisco">Cisco</option>
+                            <option value="Juniper">Juniper</option>
+                            <option value="HP">HP</option>
+                            <option value="Huawei">Huawei</option>
+                            <option value="Dell">Dell</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>الموقع</label>
+                    <input type="text" name="location" class="form-control">
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" onclick="closeAllModals()">إلغاء</button>
+            <button type="button" class="btn btn-primary" onclick="saveDeviceEdit()">حفظ التغييرات</button>
+        </div>
+    </div>
+</div>
+
+<!-- Loading Modal -->
+<div id="loading-modal" class="modal">
+    <div class="modal-overlay"></div>
+    <div class="modal-content" style="text-align: center; padding: 40px; max-width: 400px;">
+        <div class="spinner" style="width: 50px; height: 50px; border: 4px solid #e5e7eb; border-top-color: #2563eb; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 20px;"></div>
+        <p id="loading-message" style="color: #6b7280;">جاري التحميل...</p>
+    </div>
+</div>
+
+
+<!--            _________________________________-->
+            <!-- Monitoring Page -->
+            <section id="monitoring-page" class="page" aria-labelledby="monitoring-title">
+                <h2 id="monitoring-title" class="visually-hidden" data-i18n="pages.monitoring"></h2>
+
+                <div class="page-actions">
+                    <label for="monitoring-device-select" class="visually-hidden" data-i18n="select.Devices.one">اختر جهازاً للمراقبة</label>
+                    <select id="monitoring-device-select" class="form-control">
+                        <option value="" data-i18n="select.Devices.two">اختر جهازاً للمراقبة</option>
+                    </select>
+                    <button id="start-monitoring-btn" class="btn btn-primary" disabled>
+                        <i class="fas fa-play" aria-hidden="true"></i> <span data-i18n="buttons.startMonitoring">بدء المراقبة</span>
+                    </button>
+                    <button id="ping-device-btn" class="btn btn-secondary" disabled>
+                        <i class="fas fa-network-wired" aria-hidden="true"></i> Ping
+                    </button>
+                </div>
+
+                <article id="monitoring-device-info" class="card hidden">
+                    <header class="card-header">
+                        <h3><i class="fas fa-server" aria-hidden="true"></i> <span data-i18n="monitoring.deviceInfo">معلومات الجهاز</span></h3>
+                    </header>
+                    <div class="card-body">
+                        <dl class="device-info-grid">
+                            <div class="info-item">
+                                <dt class="info-label" data-i18n="table.name">الاسم:</dt>
+                                <dd id="mon-device-name" class="info-value">-</dd>
+                            </div>
+                            <div class="info-item">
+                                <dt class="info-label">IP Address:</dt>
+                                <dd id="mon-device-ip" class="info-value">-</dd>
+                            </div>
+                            <div class="info-item">
+                                <dt class="info-label" data-i18n="table.type">النوع:</dt>
+                                <dd id="mon-device-type" class="info-value">-</dd>
+                            </div>
+                            <div class="info-item">
+                                <dt class="info-label" data-i18n="table.vendor">الشركة:</dt>
+                                <dd id="mon-device-vendor" class="info-value">-</dd>
+                            </div>
+                            <div class="info-item">
+                                <dt class="info-label" data-i18n="table.status">الحالة:</dt>
+                                <dd id="mon-device-status" class="info-value">-</dd>
+                            </div>
+                            <div class="info-item">
+                                <dt class="info-label" data-i18n="table.lastSeen">آخر ظهور:</dt>
+                                <dd id="mon-device-lastseen" class="info-value">-</dd>
+                            </div>
+                        </dl>
+                    </div>
+                </article>
+
+                <article id="device-health-card" class="card hidden">
+                    <header class="card-header">
+                        <h3><i class="fas fa-heartbeat" aria-hidden="true"></i> <span data-i18n="monitoring.health">صحة الجهاز</span></h3>
+                    </header>
+                    <div class="card-body">
+                        <div class="health-metrics">
+                            <div class="metric-row">
+                                <span class="metric-label" data-i18n="monitoring.overallHealth">الصحة العامة:</span>
+                                <div class="metric-bar-container">
+                                    <div id="health-bar" class="metric-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                                    <span id="health-percentage" class="metric-value">0%</span>
+                                </div>
+                            </div>
+                            <div class="metric-row">
+                                <span class="metric-label" data-i18n="monitoring.pingResponse">استجابة Ping:</span>
+                                <span id="ping-response" class="metric-value">-</span>
+                            </div>
+                            <div class="metric-row">
+                                <span class="metric-label" data-i18n="monitoring.lastUpdate">آخر تحديث:</span>
+                                <span id="last-update" class="metric-value">-</span>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+
+                <div class="dashboard-grid">
+                    <article class="card">
+                        <header class="card-header">
+                            <h3><i class="fas fa-ethernet" aria-hidden="true"></i> <span data-i18n="monitoring.interfaces">Interfaces</span></h3>
+                        </header>
+                        <div class="card-body">
+                            <div id="interfaces-list" class="interfaces-list">
+                                <p class="empty-state" data-i18n="monitoring.selectDevice">اختر جهازاً لعرض interfaces</p>
+                            </div>
+                        </div>
+                    </article>
+
+                    <article class="card">
+                        <header class="card-header">
+                            <h3><i class="fas fa-chart-line" aria-hidden="true"></i> <span data-i18n="monitoring.realtimeStatus">الحالة اللحظية</span></h3>
+                        </header>
+                        <div class="card-body">
+                            <div id="realtime-status">
+                                <p class="empty-state" data-i18n="monitoring.selectToMonitor">اختر جهازاً لبدء المراقبة</p>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+
+                <article class="card">
+                    <header class="card-header">
+                        <h3><i class="fas fa-terminal" aria-hidden="true"></i> <span data-i18n="monitoring.pingResults">نتائج Ping</span></h3>
+                    </header>
+                    <div class="card-body">
+                        <div id="ping-results" class="ping-results">
+                            <p class="empty-state" data-i18n="monitoring.clickPing">اضغط على زر Ping لاختبار الاتصال</p>
+                        </div>
+                    </div>
+                </article>
+            </section>
+
+<!-- _____________________________________           -->
+
+<!-- Security Page -->
+<!-- Security Page -->
+<section id="security-page" class="page" aria-labelledby="security-title">
+    <h2 id="security-title" class="visually-hidden" data-i18n="pages.security"> </h2>
+
+    <!-- Device Selector Card -->
+    <article class="card device-selector-card" style="
+        margin-bottom: 25px;
+        background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+        border: 2px solid #334155;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+    ">
+        <div class="card-body" style="
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            padding: 25px;
+        ">
+            <div style="flex: 1; min-width: 300px;">
+<!--                <label for="security-device-selector" style="-->
+<!--                    display: block;-->
+<!--                    margin-bottom: 10px;-->
+<!--                    color: #94a3b8;-->
+<!--                    font-weight: 600;-->
+<!--                    font-size: 14px;-->
+<!--                ">-->
+<!--                    <i class="fas fa-server" style="margin-left: 8px; color: #60a5fa;"></i>-->
+<!--                    اختر الجهاز للفحص:-->
+<!--                </label>-->
+                <select id="security-device-selector" class="form-control" style="
+                    width: 100%;
+                    padding: 14px;
+                    border-radius: 10px;
+                    background: #0f172a;
+                    color: #f8fafc;
+                    border: 2px solid #475569;
+                    font-size: 15px;
+                    cursor: pointer;
+                    transition: all 0.3s ease;
+                ">
+                    <option value="">-- جاري تحميل الأجهزة... --</option>
+                </select>
+                <p id="device-hint" style="
+                    margin-top: 8px;
+                    font-size: 12px;
+                    color: #64748b;
+                ">
+                    <i class="fas fa-info-circle" data-i18n="security.add" ></i>
+
+                </p>
+            </div>
+
+            <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                <button id="scan-security-btn" class="btn btn-primary btn-lg" style="
+                    padding: 14px 32px;
+                    font-size: 16px;
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+                    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+                    border: none;
+                    border-radius: 10px;
+                    box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+                    transition: all 0.3s ease;
+                ">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>فحص الأمان</span>
+                </button>
+
+                <button onclick="refreshDeviceSelector()" class="btn btn-secondary" style="
+                    padding: 14px 20px;
+                    border-radius: 10px;
+                " title="تحديث قائمة الأجهزة">
+                    <i class="fas fa-sync-alt"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Scan Status Bar -->
+        <div id="scan-status-bar" style="
+            padding: 12px 25px;
+            background: rgba(15, 23, 42, 0.8);
+            border-top: 1px solid #334155;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        ">
+<!--            <span id="scan-status" style="color: #64748b; font-size: 14px;">-->
+<!--                <i class="fas fa-mouse-pointer" style="margin-left: 5px;"></i>-->
+<!--                اختر جهازاً ثم اضغط "فحص الأمان"-->
+<!--            </span>-->
+            <span id="last-scan-time" style="color: #475569; font-size: 12px;">
+                -
+            </span>
+        </div>
+    </article>
+
+    <!-- Stats Grid -->
+    <div class="stats-grid">
+        <article class="stat-card clickable" onclick="showSecurityStatsDetails('open')" style="
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            border: 1px solid #334155;
+        ">
+            <div class="stat-icon" style="background: #ef444420; color: #ef4444;" aria-hidden="true">
+                <i class="fas fa-bug"></i>
+            </div>
+            <div class="stat-info">
+                <h3 id="open-issues" style="color: #ef4444;">0</h3>
+                <p data-i18n="security.openIssues" style="color: #94a3b8;">مشاكل مفتوحة</p>
+            </div>
+        </article>
+
+        <article class="stat-card clickable" onclick="showSecurityStatsDetails('attacks')" style="
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            border: 1px solid #334155;
+        ">
+            <div class="stat-icon" style="background: #f9731620; color: #f97316;" aria-hidden="true">
+                <i class="fas fa-shield-virus"></i>
+            </div>
+            <div class="stat-info">
+                <h3 id="attacks-detected" style="color: #f97316;">0</h3>
+                <p data-i18n="security.attacksDetected" style="color: #94a3b8;">هجمات مكتشفة</p>
+            </div>
+        </article>
+
+        <article class="stat-card clickable" onclick="showSecurityStatsDetails('resolved')" style="
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            border: 1px solid #334155;
+        ">
+            <div class="stat-icon" style="background: #10b98120; color: #10b981;" aria-hidden="true">
+                <i class="fas fa-check-shield"></i>
+            </div>
+            <div class="stat-info">
+                <h3 id="resolved-issues" style="color: #10b981;">0</h3>
+                <p data-i18n="security.resolvedIssues" style="color: #94a3b8;">مشاكل محلولة</p>
+            </div>
+        </article>
+    </div>
+
+    <!-- Scan Results -->
+    <article class="card" style="
+        background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+        border: 1px solid #334155;
+    ">
+        <header class="card-header" style="
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 25px;
+            border-bottom: 1px solid #334155;
+        ">
+            <h3 style="display: flex; align-items: center; gap: 10px;">
+                <i class="fas fa-exclamation-triangle" style="color: #fbbf24;"></i>
+                <span data-i18n="security.issues">نتائج فحص الأمان</span>
+                <span id="issues-count-badge" style="
+                    background: #ef4444;
+                    color: white;
+                    padding: 2px 10px;
+                    border-radius: 20px;
+                    font-size: 12px;
+                    display: none;
+                ">0</span>
+            </h3>
+            <div style="display: flex; gap: 10px;">
+                <button class="btn btn-sm btn-danger" onclick="clearAllIssues()" id="clear-security-issues-btn" style="display: none;">
+                    <i class="fas fa-trash"></i> مسح الكل
+                </button>
+            </div>
+        </header>
+        <div class="card-body" style="padding: 0;">
+            <div id="security-issues-list" style="max-height: 600px; overflow-y: auto; padding: 25px;">
+                <div class="empty-state" style="
+                    text-align: center;
+                    padding: 80px 20px;
+                    color: #64748b;
+                ">
+                    <div style="
+                        width: 100px;
+                        height: 100px;
+                        background: linear-gradient(135deg, #334155 0%, #1e293b 100%);
+                        border-radius: 50%;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        margin: 0 auto 25px;
+                    ">
+                        <i class="fas fa-shield-alt" style="font-size: 48px; opacity: 0.5;"></i>
+                    </div>
+                    <h3 style="color: #94a3b8; margin-bottom: 15px;">ابدأ فحص الأمان</h3>
+                    <p style="max-width: 400px; margin: 0 auto; line-height: 1.6;">
+                        اختر جهازاً من القائمة أعلاه ثم اضغط
+                        <strong style="color: #60a5fa;">"فحص الأمان"</strong>
+                        لاكتشاف الثغرات والمشاكل الأمنية
+                    </p>
+                </div>
+            </div>
+        </div>
+    </article>
+
+    <!-- Security Tips -->
+    <article class="card" style="
+        margin-top: 25px;
+        background: linear-gradient(135deg, #1e3a5f 0%, #0f172a 100%);
+        border: 1px solid #334155;
+    ">
+        <header class="card-header" style="padding: 20px 25px; border-bottom: 1px solid #334155;">
+            <h3 style="display: flex; align-items: center; gap: 10px;">
+                <i class="fas fa-lightbulb" style="color: #fbbf24;"  data-i18n="x.x"></i>
+
+            </h3>
+        </header>
+        <div class="card-body" style="padding: 25px;">
+            <div class="tips-grid" style="
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+                gap: 20px;
+            ">
+                <div class="tip-item" style="
+                    padding: 20px;
+                    background: rgba(15, 23, 42, 0.6);
+                    border-radius: 12px;
+                    border-right: 4px solid #10b981;
+                    transition: transform 0.3s ease;
+                ">
+                    <h4 style="color: #10b981; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+                        <i class="fas fa-check-circle"></i> SSH فقط
+                    </h4>
+                    <p style="color: #94a3b8; font-size: 14px; line-height: 1.6;">
+                        تعطيل Telnet تماماً واستخدام SSH الإصدار 2 فقط للوصول الآمن
+                    </p>
+                </div>
+
+                <div class="tip-item" style="
+                    padding: 20px;
+                    background: rgba(15, 23, 42, 0.6);
+                    border-radius: 12px;
+                    border-right: 4px solid #3b82f6;
+                    transition: transform 0.3s ease;
+                ">
+                    <h4 style="color: #3b82f6; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+                        <i class="fas fa-key"></i> كلمات مرور قوية
+                    </h4>
+                    <p style="color: #94a3b8; font-size: 14px; line-height: 1.6;">
+                        استخدم <code>enable secret</code> بدلاً من <code>enable password</code> للتشفير القوي
+                    </p>
+                </div>
+
+                <div class="tip-item" style="
+                    padding: 20px;
+                    background: rgba(15, 23, 42, 0.6);
+                    border-radius: 12px;
+                    border-right: 4px solid #f59e0b;
+                    transition: transform 0.3s ease;
+                ">
+                    <h4 style="color: #f59e0b; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+                        <i class="fas fa-network-wired"></i> Port Security
+                    </h4>
+                    <p style="color: #94a3b8; font-size: 14px; line-height: 1.6;">
+                        تفعيل Port Security على كل منافذ Access مع MAC Address Sticky
+                    </p>
+                </div>
+
+                <div class="tip-item" style="
+                    padding: 20px;
+                    background: rgba(15, 23, 42, 0.6);
+                    border-radius: 12px;
+                    border-right: 4px solid #ef4444;
+                    transition: transform 0.3s ease;
+                ">
+                    <h4 style="color: #ef4444; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+                        <i class="fas fa-ban"></i> خدمات غير ضرورية
+                    </h4>
+                    <p style="color: #94a3b8; font-size: 14px; line-height: 1.6;">
+                        تعطيل HTTP, CDP, Telnet, وكل الخدمات غير المستخدمة
+                    </p>
+                </div>
+            </div>
+        </div>
+    </article>
+</section>
+<!--            _______________________________-->
+
+            <!-- Performance Page -->
+            <section id="performance-page" class="page" aria-labelledby="performance-title">
+                <h2 id="performance-title" class="visually-hidden" data-i18n="pages.performance"> </h2>
+
+                <div class="page-actions">
+                    <label for="performance-device-select" class="visually-hidden" data-i18n="labels.selectDevice">اختر جهازاً</label>
+                    <select id="performance-device-select" class="form-control">
+                        <option value="" data-i18n="labels.selectDevice">اختر جهازاً</option>
+                    </select>
+                    <button id="refresh-performance-btn" class="btn btn-secondary">
+                        <i class="fas fa-sync" aria-hidden="true"></i> <span data-i18n="buttons.refresh">تحديث</span>
+                    </button>
+                    <button id="auto-refresh-btn" class="btn btn-info">
+                        <i class="fas fa-play" aria-hidden="true"></i> <span data-i18n="buttons.autoRefresh">تحديث تلقائي</span>
+                    </button>
+                </div>
+
+                <div class="dashboard-grid">
+                    <article class="card">
+                        <header class="card-header">
+                            <h3><i class="fas fa-microchip" aria-hidden="true"></i> <span data-i18n="performance.cpuUsage"></span></h3>
+                        </header>
+                        <div class="card-body">
+                            <canvas id="cpu-chart" aria-label="رسم بياني يوضح استخدام CPU"></canvas>
+                        </div>
+                    </article>
+                    <article class="card">
+                        <header class="card-header">
+                            <h3><i class="fas fa-memory" aria-hidden="true"></i> <span data-i18n="performance.memoryUsage"></span></h3>
+                        </header>
+                        <div class="card-body">
+                            <canvas id="memory-chart" aria-label="رسم بياني يوضح استخدام الذاكرة"></canvas>
+                        </div>
+                    </article>
+                </div>
+
+                <article class="card">
+                    <header class="card-header">
+                        <h3><i class="fas fa-table" aria-hidden="true"></i> <span data-i18n="performance.performanceTable">بيانات الأداء اللحظية</span></h3>
+                    </header>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table id="performance-table" class="data-table">
+                                <caption class="visually-hidden" data-i18n="performance.tableCaption">جدول بيانات الأداء اللحظية للأجهزة</caption>
+                                <thead>
+                                    <tr>
+                                        <th scope="col" data-i18n="table.time">الوقت</th>
+                                        <th scope="col" data-i18n="table.device">الجهاز</th>
+                                        <th scope="col">CPU %</th>
+                                        <th scope="col" data-i18n="performance.memory">الذاكرة %</th>
+                                        <th scope="col" data-i18n="performance.disk">القرص %</th>
+                                        <th scope="col" data-i18n="performance.responseTime">زمن الاستجابة</th>
+                                        <th scope="col" data-i18n="table.status">الحالة</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="performance-tbody">
+                                    <!-- Dynamic content -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </article>
+            </section>
+
+<!--            +_______________________________________________-->
+            <!-- AI Analysis Page -->
+            <section id="ai-analysis-page" class="page" aria-labelledby="ai-title">
+                <h2 id="ai-title" class="visually-hidden" data-i18n="pages.ai">المساعد الذكي</h2>
+
+                <div class="ai-fullpage-container">
+                    <header class="ai-header">
+                        <h2><i class="fas fa-robot" aria-hidden="true"></i> <span data-i18n="ai.title">  </span></h2>
+                        <p data-i18n="ai.subtitle">اسأل عن أي مشكلة في الشبكة وسأساعدك في حلها</p>
+                    </header>
+
+                    <div class="ai-chat-fullpage">
+                        <div id="chat-messages" class="chat-messages-full" role="log" aria-live="polite" aria-label="محادثة المساعد الذكي">
+                            <!-- Welcome Message -->
+                            <div class="message bot welcome-message">
+                                <div class="bot-avatar" aria-hidden="true">
+                                    <i class="fas fa-robot"></i>
+                                </div>
+                                <div class="message-content">
+                                    <p data-i18n="ai.welcome">مرحباً! 👋 أنا مساعد SIM-NET الذكي.</p>
+                                    <p><strong data-i18n="ai.canHelp">يمكنني مساعدتك في حل <span id="problems-count">24</span> مشكلة شبكية شائعة:</strong></p>
+                                    <div class="problems-grid" role="list">
+                                        <span class="problem-tag" role="listitem">Interface</span>
+                                        <span class="problem-tag" role="listitem">CPU</span>
+                                        <span class="problem-tag" role="listitem">Memory</span>
+                                        <span class="problem-tag" role="listitem">DHCP</span>
+                                        <span class="problem-tag" role="listitem">DNS</span>
+                                        <span class="problem-tag" role="listitem">OSPF</span>
+                                        <span class="problem-tag" role="listitem">BGP</span>
+                                        <span class="problem-tag" role="listitem">VPN</span>
+                                        <span class="problem-tag" role="listitem">NAT</span>
+                                        <span class="problem-tag" role="listitem">ACL</span>
+                                        <span class="problem-tag" role="listitem">STP</span>
+                                        <span class="problem-tag" role="listitem">VLAN</span>
+                                        <span class="problem-tag" role="listitem">QoS</span>
+                                        <span class="problem-tag" role="listitem">Router</span>
+                                        <span class="problem-tag" role="listitem">Switch</span>
+                                        <span class="problem-tag" role="listitem">Firewall</span>
+                                        <span class="problem-tag" role="listitem">ARP</span>
+                                        <span class="problem-tag" role="listitem">SNMP</span>
+                                        <span class="problem-tag" role="listitem">Port Security</span>
+                                        <span class="problem-tag" role="listitem">Windows Server</span>
+                                        <span class="problem-tag" role="listitem">End User</span>
+                                        <span class="problem-tag" role="listitem">Bandwidth</span>
+                                        <span class="problem-tag" role="listitem">Errors</span>
+                                        <span class="problem-tag" role="listitem">Slow Network</span>
+                                    </div>
+                                    <p class="hint"><i class="fas fa-lightbulb"></i> <span data-i18n="ai.hint">اكتب أي كلمة من الأعلى أو صف مشكلتك بالتفصيل</span></p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="chat-input-full">
+                            <div class="input-wrapper">
+                                <label for="chat-input" class="visually-hidden" data-i18n="ai.inputLabel">رسالتك للمساعد الذكي</label>
+                                <input type="text" id="chat-input" data-i18n-placeholder="ai.inputPlaceholder" placeholder="اكتب مشكلتك هنا... مثال: الراوتر مش بيبين أو CPU عالي" aria-label="اكتب مشكلتك هنا">
+                                <button id="send-message-btn" class="btn btn-primary" aria-label="إرسال الرسالة">
+                                    <i class="fas fa-paper-plane" aria-hidden="true"></i>
+                                </button>
+                            </div>
+                            <div class="quick-actions" role="group" aria-label="اختصارات سريعة">
+                                <button class="quick-btn" onclick="sendQuickMessage('الراوتر مش شغال')" type="button">
+                                    <i class="fas fa-router" aria-hidden="true"></i> <span data-i18n="ai.quick.router">الراوتر مش شغال</span>
+                                </button>
+                                <button class="quick-btn" onclick="sendQuickMessage('CPU عالي')" type="button">
+                                    <i class="fas fa-microchip" aria-hidden="true"></i> <span data-i18n="ai.quick.cpu">CPU عالي</span>
+                                </button>
+                                <button class="quick-btn" onclick="sendQuickMessage('الشبكة بطيئة')" type="button">
+                                    <i class="fas fa-tachometer-alt" aria-hidden="true"></i> <span data-i18n="ai.quick.slow">شبكة بطيئة</span>
+                                </button>
+                                <button class="quick-btn" onclick="sendQuickMessage('DHCP مش شغال')" type="button">
+                                    <i class="fas fa-network-wired" aria-hidden="true"></i> <span data-i18n="ai.quick.dhcp">DHCP مش شغال</span>
+                                </button>
+                                <button class="quick-btn" onclick="sendQuickMessage('مشاكل VLAN')" type="button">
+                                    <i class="fas fa-project-diagram" aria-hidden="true"></i> VLAN
+                                </button>
+                                <button class="quick-btn" onclick="sendQuickMessage('VPN مش متصل')" type="button">
+                                    <i class="fas fa-lock" aria-hidden="true"></i> VPN
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+<!-- _____________________________ _____________________-->
+           <!-- Reports/Backup Page -->
+<section id="reports-page" class="page" aria-labelledby="reports-title">
+    <h2 id="reports-title" class="visually-hidden" data-i18n="pages.reports">  </h2>
+
+    <!-- Executive Summary for Manager -->
+    <article class="card executive-summary-card" style="
+        margin-bottom: 25px;
+        background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        border: 2px solid #334155;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+    ">
+        <header class="card-header" style="
+            padding: 25px;
+            border-bottom: 1px solid #334155;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        ">
+            <div>
+                <h2 style="
+                    display: flex;
+                    align-items: center;
+                    gap: 12px;
+                    color: #f8fafc;
+                    font-size: 24px;
+                    margin-bottom: 8px;
+                ">
+                    <i class="fas fa-chart-line" style="color: #3b82f6;" data-i18n="summary-report-one"></i>
+                </h2>
+                <p style="color: #94a3b8; font-size: 14px;" data-i18n="summary-report-two">
+                </p>
+            </div>
+            <button class="btn btn-primary" onclick="generateFullReport()" style="
+                padding: 12px 24px;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            ">
+                <i class="fas fa-file-download" data-i18n="summary-report-three"></i>
+            </button>
+        </header>
+
+        <div class="card-body" style="padding: 25px;">
+            <div id="executive-summary">
+                <div class="loading-state" style="text-align: center; padding: 40px; color: #64748b;">
+                    <i class="fas fa-spinner fa-spin" style="font-size: 32px; margin-bottom: 15px;"></i>
+                    <p>جاري تحميل البيانات...</p>
+                </div>
+            </div>
+        </div>
+    </article>
+
+    <!-- Statistics Grid -->
+    <div class="reports-stats-grid" style="
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 20px;
+        margin-bottom: 25px;
+    ">
+        <!-- Devices Stats -->
+        <article class="card stat-detail-card" style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);">
+            <header class="card-header" style="padding: 20px; border-bottom: 1px solid #334155;">
+                <h3 style="display: flex; align-items: center; gap: 10px; color: #60a5fa;">
+                    <i class="fas fa-server"></i>
+                    <span data-i18n="summary-report-four">إحصائيات الأجهزة </span>
+                </h3>
+            </header>
+            <div class="card-body" style="padding: 20px;">
+                <div class="stats-row" style="
+                    display: grid;
+                    grid-template-columns: repeat(2, 1fr);
+                    gap: 15px;
+                    margin-bottom: 20px;
+                ">
+                    <div class="mini-stat" style="text-align: center; padding: 15px; background: #0f172a; border-radius: 10px;">
+                        <div id="report-total-devices" style="font-size: 32px; font-weight: 700; color: #f8fafc;">0</div>
+                        <div style="color: #64748b; font-size: 12px; margin-top: 5px;" data-i18n="x.1">إجمالي</div>
+                    </div>
+                    <div class="mini-stat" style="text-align: center; padding: 15px; background: #0f172a; border-radius: 10px;">
+                        <div id="report-online-devices" style="font-size: 32px; font-weight: 700; color: #10b981;">0</div>
+                        <div style="color: #64748b; font-size: 12px; margin-top: 5px;" data-i18n="x.2">متصل</div>
+                    </div>
+                    <div class="mini-stat" style="text-align: center; padding: 15px; background: #0f172a; border-radius: 10px;">
+                        <div id="report-offline-devices" style="font-size: 32px; font-weight: 700; color: #ef4444;">0</div>
+                        <div style="color: #64748b; font-size: 12px; margin-top: 5px;" data-i18n="x.3">غير متصل</div>
+                    </div>
+                    <div class="mini-stat" style="text-align: center; padding: 15px; background: #0f172a; border-radius: 10px;">
+                        <div id="report-unknown-devices" style="font-size: 32px; font-weight: 700; color: #f59e0b;">0</div>
+                        <div style="color: #64748b; font-size: 12px; margin-top: 5px;" data-i18n="x.4">غير معروف</div>
+                    </div>
+                </div>
+
+                <h4 style="color: #94a3b8; font-size: 14px; margin-bottom: 12px;" data-i18n="x.5">توزيع الأنواع:</h4>
+                <div id="device-types-distribution">
+                    <p style="color: #64748b; text-align: center; padding: 20px;" data-i18n="x.6">جاري التحميل...</p>
+                </div>
+            </div>
+        </article>
+
+        <!-- Security Stats -->
+        <article class="card stat-detail-card" style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);">
+            <header class="card-header" style="padding: 20px; border-bottom: 1px solid #334155;">
+                <h3 style="display: flex; align-items: center; gap: 10px; color: #f59e0b;">
+                    <i class="fas fa-shield-alt"></i>
+                   <span data-i18n="summary-report-five"> إحصائيات الأمان</span>
+                </h3>
+            </header>
+            <div class="card-body" style="padding: 20px;">
+                <div class="stats-row" style="
+                    display: grid;
+                    grid-template-columns: repeat(2, 1fr);
+                    gap: 15px;
+                    margin-bottom: 20px;
+                ">
+                    <div class="mini-stat" style="text-align: center; padding: 15px; background: #0f172a; border-radius: 10px;">
+                        <div id="report-total-issues" style="font-size: 28px; font-weight: 700; color: #f8fafc;">0</div>
+                        <div style="color: #64748b; font-size: 12px; margin-top: 5px;" data-i18n="x.7">إجمالي المشاكل</div>
+                    </div>
+                    <div class="mini-stat" style="text-align: center; padding: 15px; background: #0f172a; border-radius: 10px;">
+                        <div id="report-critical-issues" style="font-size: 28px; font-weight: 700; color: #ef4444;">0</div>
+                        <div style="color: #64748b; font-size: 12px; margin-top: 5px;" data-i18n="x.8">حرجة</div>
+                    </div>
+                    <div class="mini-stat" style="text-align: center; padding: 15px; background: #0f172a; border-radius: 10px;">
+                        <div id="report-high-issues" style="font-size: 28px; font-weight: 700; color: #f59e0b;">0</div>
+                        <div style="color: #64748b; font-size: 12px; margin-top: 5px;" data-i18n="x.9">عالية</div>
+                    </div>
+                    <div class="mini-stat" style="text-align: center; padding: 15px; background: #0f172a; border-radius: 10px;">
+                        <div id="report-resolved-issues" style="font-size: 28px; font-weight: 700; color: #10b981;">0</div>
+                        <div style="color: #64748b; font-size: 12px; margin-top: 5px;" data-i18n="x.10">تم حلها</div>
+                    </div>
+                </div>
+
+                <div class="security-summary" style="
+                    background: rgba(239, 68, 68, 0.1);
+                    border: 1px solid rgba(239, 68, 68, 0.3);
+                    border-radius: 10px;
+                    padding: 15px;
+                    margin-top: 15px;
+                ">
+                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+                        <i class="fas fa-search" style="color: #f59e0b;"></i>
+                        <span style="color: #f8fafc; font-weight: 600;" data-i18n="x.11">فحوصات الأمان</span>
+                    </div>
+                    <p style="color: #94a3b8; font-size: 13px;" data-i18n="x.12">
+                        <span id="report-security-scans" style="color: #3b82f6; font-weight: 600;">0</span>
+                        فحص تم تنفيذه على الأجهزة
+                    </p>
+                </div>
+            </div>
+        </article>
+
+        <!-- Network Stats -->
+        <article class="card stat-detail-card" style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);">
+            <header class="card-header" style="padding: 20px; border-bottom: 1px solid #334155;">
+                <h3 style="display: flex; align-items: center; gap: 10px; color: #10b981;">
+                    <i class="fas fa-network-wired"></i>
+                   <span data-i18n="summary-report-sex"> حالة الشبكة</span>
+                </h3>
+            </header>
+            <div class="card-body" style="padding: 20px;">
+                <div class="network-status" style="text-align: center; padding: 20px; background: #0f172a; border-radius: 10px; margin-bottom: 20px;">
+                    <div id="report-active-connections" style="font-size: 48px; font-weight: 700; color: #10b981; margin-bottom: 10px;">0</div>
+                    <div style="color: #64748b;" data-i18n="x.13">اتصال نشط</div>
+                </div>
+
+                <div class="network-details" style="display: flex; flex-direction: column; gap: 12px;">
+                    <div style="display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #334155;">
+                        <span style="color: #94a3b8;" data-i18n="x.14">إجمالي IP Addresses</span>
+                        <strong id="report-total-ips" style="color: #f8fafc;">0</strong>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; padding: 12px 0;">
+                        <span style="color: #94a3b8;" data-i18n="x.15">آخر فحص أمان</span>
+                        <strong id="report-last-scan" style="color: #f8fafc;">--</strong>
+                    </div>
+                </div>
+            </div>
+        </article>
+    </div>
+
+    <!-- Activity Log -->
+    <article class="card" style="
+        margin-bottom: 25px;
+        background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+        border: 1px solid #334155;
+    ">
+        <header class="card-header" style="
+            padding: 20px 25px;
+            border-bottom: 1px solid #334155;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        ">
+            <h3 style="display: flex; align-items: center; gap: 10px;">
+                <i class="fas fa-history" style="color: #3b82f6;"></i>
+               <span data-i18n="summary-report-sevn"> سجل النشاطات والأحداث</span>
+            </h3>
+            <div style="display: flex; gap: 10px;">
+                <button class="btn btn-sm btn-secondary" onclick="loadActivityLog()" title="تحديث">
+                    <i class="fas fa-sync-alt"></i>
+                </button>
+                <span style="color: #64748b; font-size: 14px; padding: 8px 16px; background: #0f172a; border-radius: 20px;" data-i18n="x.16">
+                    آخر 20 نشاط
+                </span>
+            </div>
+        </header>
+        <div class="card-body" style="padding: 25px;">
+            <div id="activity-log-list" style="max-height: 400px; overflow-y: auto;">
+                <div class="loading-state" style="text-align: center; padding: 40px; color: #64748b;">
+                    <i class="fas fa-spinner fa-spin" style="font-size: 24px; margin-bottom: 10px;"></i>
+                    <p>جاري تحميل النشاطات...</p>
+                </div>
+            </div>
+        </div>
+    </article>
+
+    <!-- Backup Section Header___________________________________________________________________________________________________ -->
+    <header class="page-header" style="
+        margin-bottom: 25px;
+        padding: 25px;
+        background: linear-gradient(135deg, #1e3a5f 0%, #0f172a 100%);
+        border-radius: 12px;
+        border: 1px solid #334155;
+    ">
+        <h2 style="
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #f8fafc;
+            margin-bottom: 10px;
+        "
+        data-i18n="x.17"
+        >
+            <i class="fas fa-cloud-upload-alt" style="color: #3b82f6;"></i>
+            النسخ الاحتياطي والمزامنة
+        </h2>
+        <p style="color: #94a3b8;" data-i18n="x.18">احفظ بياناتك واستعادتها في أي وقت</p>
+    </header>
+
+    <!-- Backup Stats -->
+    <div class="backup-stats-grid" style="
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 20px;
+        margin-bottom: 25px;
+    ">
+        <article class="backup-stat-card" style="
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        ">
+            <div class="backup-icon" style="
+                width: 50px;
+                height: 50px;
+                background: #3b82f620;
+                border-radius: 12px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: #3b82f6;
+                font-size: 24px;
+            ">
+                <i class="fas fa-database"></i>
+            </div>
+            <div class="backup-info">
+                <h3 id="data-size" style="font-size: 24px; color: #f8fafc; margin-bottom: 5px;">0 MB</h3>
+                <p style="color: #64748b; font-size: 14px;" data-i18n="x.19">حجم البيانات</p>
+            </div>
+        </article>
+
+        <article class="backup-stat-card" style="
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        ">
+            <div class="backup-icon" style="
+                width: 50px;
+                height: 50px;
+                background: #10b98120;
+                border-radius: 12px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: #10b981;
+                font-size: 24px;
+            ">
+                <i class="fas fa-clock"></i>
+            </div>
+            <div class="backup-info">
+                <h3 id="last-backup" style="font-size: 24px; color: #f8fafc; margin-bottom: 5px;">--</h3>
+                <p style="color: #64748b; font-size: 14px;" data-i18n="x.20">آخر نسخة</p>
+            </div>
+        </article>
+
+        <article class="backup-stat-card" style="
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        ">
+            <div class="backup-icon" style="
+                width: 50px;
+                height: 50px;
+                background: #8b5cf620;
+                border-radius: 12px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: #8b5cf6;
+                font-size: 24px;
+            ">
+                <i class="fas fa-shield-alt"></i>
+            </div>
+            <div class="backup-info">
+                <h3 id="backup-count" style="font-size: 24px; color: #f8fafc; margin-bottom: 5px;">0</h3>
+                <p style="color: #64748b; font-size: 14px;" data-i18n="x.21">عدد النسخ</p>
+            </div>
+        </article>
+
+        <article class="backup-stat-card" style="
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        ">
+            <div class="backup-icon" style="
+                width: 50px;
+                height: 50px;
+                background: #f59e0b20;
+                border-radius: 12px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: #f59e0b;
+                font-size: 24px;
+            ">
+                <i class="fas fa-cloud"></i>
+            </div>
+            <div class="backup-info">
+                <h3 id="cloud-status" style="font-size: 18px; color: #f8fafc; margin-bottom: 5px;">غير متصل</h3>
+                <p style="color: #64748b; font-size: 14px;" data-i18n="x.22">حالة السحابة</p>
+            </div>
+        </article>
+    </div>
+
+    <!-- Backup Actions Grid -->
+    <div class="backup-actions-grid" style="
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 20px;
+        margin-bottom: 25px;
+    ">
+        <!-- Quick Backup -->
+        <article class="backup-action-card" style="
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            border: 1px solid #334155;
+            border-radius: 12px;
+            overflow: hidden;
+        ">
+            <header class="backup-action-header" style="
+                padding: 20px;
+                background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+                color: white;
+            ">
+                <i class="fas fa-save" style="font-size: 24px; margin-bottom: 10px;"></i>
+                <h3 style="font-size: 18px;" data-i18n="x.23">نسخ احتياطي سريع</h3>
+            </header>
+            <div class="backup-action-body" style="padding: 20px;">
+                <p style="color: #94a3b8; margin-bottom: 20px; font-size: 14px;" data-i18n="x.24">
+                    احفظ جميع بياناتك في ملف JSON يمكن استعادته لاحقاً
+                </p>
+
+                <fieldset style="border: none; margin-bottom: 20px;">
+                    <legend style="color: #64748b; font-size: 12px; margin-bottom: 15px;" data-i18n="x.25">اختر البيانات:</legend>
+
+                    <label style="
+                        display: flex;
+                        align-items: center;
+                        gap: 10px;
+                        padding: 10px;
+                        background: #0f172a;
+                        border-radius: 8px;
+                        margin-bottom: 10px;
+                        cursor: pointer;
+                    ">
+                        <input type="checkbox" id="backup-devices" checked style="width: 18px; height: 18px;">
+                        <span style="color: #e2e8f0;" data-i18n="x.26">
+                            <i class="fas fa-server" style="color: #3b82f6; margin-left: 8px;"></i>
+                            الأجهزة
+                        </span>
+                    </label>
+
+                    <label style="
+                        display: flex;
+                        align-items: center;
+                        gap: 10px;
+                        padding: 10px;
+                        background: #0f172a;
+                        border-radius: 8px;
+                        margin-bottom: 10px;
+                        cursor: pointer;
+                    ">
+                        <input type="checkbox" id="backup-logs" checked style="width: 18px; height: 18px;">
+                        <span style="color: #e2e8f0;" data-i18n="x.27">
+                            <i class="fas fa-shield-alt" style="color: #f59e0b; margin-left: 8px;"></i>
+                            السجلات والمشاكل
+                        </span>
+                    </label>
+
+                    <label style="
+                        display: flex;
+                        align-items: center;
+                        gap: 10px;
+                        padding: 10px;
+                        background: #0f172a;
+                        border-radius: 8px;
+                        margin-bottom: 10px;
+                        cursor: pointer;
+                    ">
+                        <input type="checkbox" id="backup-settings" checked style="width: 18px; height: 18px;">
+                        <span style="color: #e2e8f0;" data-i18n="x.28">
+                            <i class="fas fa-cog" style="color: #10b981; margin-left: 8px;"></i>
+                            الإعدادات
+                        </span>
+                    </label>
+                </fieldset>
+
+                <button class="btn btn-primary btn-block" onclick="createBackup()" style="
+                    width: 100%;
+                    padding: 14px;
+                    font-size: 16px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 10px;
+
+                "
+                data-i18n="x.29"
+                >
+                    <i class="fas fa-download"></i>
+                    إنشاء نسخة احتياطية
+                </button>
+            </div>
+        </article>
+
+        <!-- Restore -->
+        <article class="backup-action-card" style="
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            border: 1px solid #334155;
+            border-radius: 12px;
+            overflow: hidden;
+        ">
+            <header class="backup-action-header" style="
+                padding: 20px;
+                background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+                color: white;
+            ">
+                <i class="fas fa-undo-alt" style="font-size: 24px; margin-bottom: 10px;"></i>
+                <h3 style="font-size: 18px;" data-i18n="x.30">استعادة البيانات</h3>
+            </header>
+            <div class="backup-action-body" style="padding: 20px;">
+                <section style="margin-bottom: 20px;">
+                    <h4 style="color: #94a3b8; font-size: 14px; margin-bottom: 15px;" data-i18n="x.31">
+                        <i class="fas fa-history" style="margin-left: 8px;"></i>
+                        النسخ المحلية
+                    </h4>
+                    <div id="local-backups-list" style="
+                        max-height: 120px;
+                        overflow-y: auto;
+                        background: #0f172a;
+                        border-radius: 8px;
+                        padding: 10px;
+                    ">
+                        <p style="color: #64748b; text-align: center; padding: 20px;">جاري التحميل...</p>
+                    </div>
+                </section>
+
+                <section>
+                    <h4 style="color: #94a3b8; font-size: 14px; margin-bottom: 15px;" data-i18n="x.32">
+                        <i class="fas fa-upload" style="margin-left: 8px;"></i>
+                        رفع ملف نسخة
+                    </h4>
+                    <div onclick="document.getElementById('restore-file').click()" style="
+                        border: 2px dashed #475569;
+                        border-radius: 10px;
+                        padding: 30px;
+                        text-align: center;
+                        cursor: pointer;
+                        transition: all 0.3s ease;
+                    " onmouseover="this.style.borderColor='#3b82f6'" onmouseout="this.style.borderColor='#475569'">
+                        <i class="fas fa-cloud-upload-alt" style="font-size: 32px; color: #3b82f6; margin-bottom: 10px;"></i>
+                        <p style="color: #94a3b8;" data-i18n="x.33">اضغط هنا أو اسحب ملف JSON</p>
+                        <input type="file" id="restore-file" accept=".json" hidden onchange="handleRestoreFile(this)">
+                    </div>
+                </section>
+            </div>
+        </article>
+
+        <!-- Auto Backup -->
+        <article class="backup-action-card" style="
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            border: 1px solid #334155;
+            border-radius: 12px;
+            overflow: hidden;
+        ">
+            <header class="backup-action-header" style="
+                padding: 20px;
+                background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+                color: white;
+            ">
+                <i class="fas fa-cog" style="font-size: 24px; margin-bottom: 10px;"></i>
+                <h3 style="font-size: 18px;" data-i18n="x.34">النسخ التلقائي</h3>
+            </header>
+            <div class="backup-action-body" style="padding: 20px;">
+                <div style="margin-bottom: 20px;">
+                    <label style="
+                        display: flex;
+                        align-items: center;
+                        justify-content: space-between;
+                        padding: 15px;
+                        background: #0f172a;
+                        border-radius: 10px;
+                        cursor: pointer;
+                    ">
+                        <span style="color: #e2e8f0;" data-i18n="x.35">
+                            <i class="fas fa-magic" style="color: #8b5cf6; margin-left: 8px;"></i>
+                            تفعيل النسخ التلقائي
+                        </span>
+                        <input type="checkbox" id="auto-backup-enabled" onchange="toggleAutoBackup()" style="width: 20px; height: 20px;">
+                    </label>
+                </div>
+
+                <div id="auto-backup-options" style="display: none;">
+                    <div style="margin-bottom: 15px;">
+                        <label style="color: #94a3b8; font-size: 12px; display: block; margin-bottom: 8px;" data-i18n="x.36">التكرار</label>
+                        <select id="auto-backup-frequency" onchange="saveAutoBackupSettings()" style="
+                            width: 100%;
+                            padding: 10px;
+                            background: #0f172a;
+                            border: 1px solid #334155;
+                            border-radius: 8px;
+                            color: #f8fafc;
+                        ">
+                            <option value="daily" data-i18n="x.361">يومي</option>
+                            <option value="weekly" data-i18n="x.37">أسبوعي</option>
+                            <option value="monthly" data-i18n="x.38">شهري</option>
+                        </select>
+                    </div>
+
+                    <div style="margin-bottom: 15px;">
+                        <label style="color: #94a3b8; font-size: 12px; display: block; margin-bottom: 8px;" data-i18n="x.39">الوقت</label>
+                        <input type="time" id="auto-backup-time" value="02:00" onchange="saveAutoBackupSettings()" style="
+                            width: 100%;
+                            padding: 10px;
+                            background: #0f172a;
+                            border: 1px solid #334155;
+                            border-radius: 8px;
+                            color: #f8fafc;
+                        ">
+                    </div>
+
+                    <div style="margin-bottom: 15px;">
+                        <label style="color: #94a3b8; font-size: 12px; display: block; margin-bottom: 8px;" data-i18n="x.40">الاحتفاظ بـ</label>
+                        <select id="auto-backup-keep" onchange="saveAutoBackupSettings()" style="
+                            width: 100%;
+                            padding: 10px;
+                            background: #0f172a;
+                            border: 1px solid #334155;
+                            border-radius: 8px;
+                            color: #f8fafc;
+                        ">
+                            <option value="5" data-i18n="x.41">5 نسخ</option>
+                            <option value="10" data-i18n="x.42">10 نسخ</option>
+                            <option value="20" data-i18n="x.43">20 نسخ</option>
+                            <option value="all" data-i18n="x.44">جميع النسخ</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="next-backup-time" style="
+                    padding: 15px;
+                    background: #0f172a;
+                    border-radius: 10px;
+                    text-align: center;
+                    color: #64748b;
+                "
+                     data-i18n="x.45"
+                >
+                    <i class="fas fa-calendar-alt" style="margin-left: 8px;"></i>
+                    النسخة القادمة: --
+                </div>
+            </div>
+        </article>
+    </div>
+
+    <!-- Backup History Table -->
+    <article class="card backup-history" style="
+        background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+        border: 1px solid #334155;
+        border-radius: 12px;
+        overflow: hidden;
+    ">
+        <header class="card-header" style="
+            padding: 20px 25px;
+            border-bottom: 1px solid #334155;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        ">
+            <h3 style="display: flex; align-items: center; gap: 10px;" data-i18n="x.46">
+                <i class="fas fa-history" style="color: #3b82f6;"></i>
+                سجل النسخ الاحتياطي
+            </h3>
+            <button class="btn btn-sm btn-danger" onclick="clearAllBackups()" data-i18n="x.47">
+                <i class="fas fa-trash"></i>
+                مسح الكل
+            </button>
+        </header>
+        <div class="card-body" style="padding: 0;">
+            <div class="table-responsive">
+                <table style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                        <tr style="background: #0f172a;">
+                            <th style="padding: 15px; text-align: right; color: #94a3b8; font-weight: 600; border-bottom: 1px solid #334155;" data-i18n="x.48">التاريخ</th>
+                            <th style="padding: 15px; text-align: right; color: #94a3b8; font-weight: 600; border-bottom: 1px solid #334155;" data-i18n="x.49">النوع</th>
+                            <th style="padding: 15px; text-align: right; color: #94a3b8; font-weight: 600; border-bottom: 1px solid #334155;" data-i18n="x.50">الحجم</th>
+                            <th style="padding: 15px; text-align: right; color: #94a3b8; font-weight: 600; border-bottom: 1px solid #334155;" data-i18n="x.51">المحتوى</th>
+                            <th style="padding: 15px; text-align: right; color: #94a3b8; font-weight: 600; border-bottom: 1px solid #334155;" data-i18n="x.52">المكان</th>
+                            <th style="padding: 15px; text-align: right; color: #94a3b8; font-weight: 600; border-bottom: 1px solid #334155;" data-i18n="x.53">الإجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody id="backup-history-tbody">
+                        <tr>
+                            <td colspan="6" style="padding: 40px; text-align: center; color: #64748b;" data-i18n="x.54">
+                                <i class="fas fa-inbox" style="font-size: 32px; margin-bottom: 10px; display: block;"></i>
+                                لا توجد نسخ احتياطية
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </article>
+</section>
+
+            <!-- Logs Page -->
+<section id="logs-page" class="page" aria-labelledby="logs-title">
+    <h2 id="logs-title" class="visually-hidden" data-i18n="pages.logs">سجلات النظام</h2>
+
+    <div class="page-actions">
+        <label for="log-filter" class="visually-hidden" data-i18n="labels.filterLogs">تصفية السجلات</label>
+        <select id="log-filter" class="form-control">
+            <option value="" data-i18n="filters.all">جميع السجلات</option>
+            <option value="info" data-i18n="filters.info">معلومات</option>
+            <option value="warning" data-i18n="filters.warning">تحذيرات</option>
+            <option value="error" data-i18n="filters.error">أخطاء</option>
+            <option value="critical" data-i18n="filters.critical">حرجة</option>
+        </select>
+        <button id="refresh-logs-btn" class="btn btn-secondary">
+            <i class="fas fa-sync" aria-hidden="true"></i> <span data-i18n="buttons.refresh">تحديث</span>
+        </button>
+    </div>
+
+    <article class="card">
+        <header class="card-header">
+            <h3><i class="fas fa-history" aria-hidden="true"></i> <span data-i18n="logs.systemLogs">سجلات النظام</span></h3>
+        </header>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table id="logs-table" class="data-table logs-clickable">
+                    <caption class="visually-hidden" data-i18n="logs.tableCaption">جدول سجلات أحداث النظام</caption>
+                    <thead>
+                        <tr>
+                            <th scope="col" data-i18n="table.time">الوقت</th>
+                            <th scope="col" data-i18n="table.type">النوع</th>
+                            <th scope="col" data-i18n="table.description">الوصف</th>
+                            <th scope="col" data-i18n="table.user">المستخدم</th>
+                            <th scope="col" data-i18n="table.device">الجهاز</th>
+                            <th scope="col" data-i18n="table.severity">الخطورة</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Dynamic content -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </article>
+</section>
+
+<!-- Log Details Modal -->
+<div id="log-details-modal" class="modal">
+    <div class="modal-content log-details-content">
+        <div class="modal-header">
+            <h3><i class="fas fa-file-alt"></i> <span data-i18n="logs.detailsTitle">تفاصيل السجل</span></h3>
+            <button class="modal-close" onclick="closeLogDetails()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="log-details-grid">
+                <div class="log-detail-item">
+                    <span class="detail-label" data-i18n="logs.timestamp">الوقت:</span>
+                    <span class="detail-value" id="log-detail-time"></span>
+                </div>
+                <div class="log-detail-item">
+                    <span class="detail-label" data-i18n="logs.type">النوع:</span>
+                    <span class="detail-value" id="log-detail-type"></span>
+                </div>
+                <div class="log-detail-item">
+                    <span class="detail-label" data-i18n="logs.severity">الخطورة:</span>
+                    <span class="detail-value" id="log-detail-severity"></span>
+                </div>
+                <div class="log-detail-item">
+                    <span class="detail-label" data-i18n="logs.user">المستخدم:</span>
+                    <span class="detail-value" id="log-detail-user"></span>
+                </div>
+                <div class="log-detail-item">
+                    <span class="detail-label" data-i18n="logs.device">الجهاز:</span>
+                    <span class="detail-value" id="log-detail-device"></span>
+                </div>
+                <div class="log-detail-item">
+                    <span class="detail-label" data-i18n="logs.ip">عنوان IP:</span>
+                    <span class="detail-value" id="log-detail-ip"></span>
+                </div>
+                <div class="log-detail-item full-width">
+                    <span class="detail-label" data-i18n="logs.description">الوصف:</span>
+                    <span class="detail-value" id="log-detail-description"></span>
+                </div>
+                <div class="log-detail-item full-width">
+                    <span class="detail-label" data-i18n="logs.rawData">البيانات الخام:</span>
+                    <pre class="log-raw-data" id="log-detail-raw"></pre>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" onclick="closeLogDetails()" data-i18n="buttons.close">إغلاق</button>
+        </div>
+    </div>
+</div>
+
+            <!-- Users Page -->
+            <section id="users-page" class="page" aria-labelledby="users-title">
+                <h2 id="users-title" class="visually-hidden" data-i18n="pages.users">إدارة المستخدمين</h2>
+
+                <div class="page-actions">
+                    <button id="add-user-btn" class="btn btn-primary">
+                        <i class="fas fa-user-plus" aria-hidden="true"></i> <span data-i18n="buttons.addUser">إضافة مستخدم</span>
+                    </button>
+                </div>
+
+                <article class="card">
+                    <header class="card-header">
+                        <h3><i class="fas fa-users" aria-hidden="true"></i> <span data-i18n="users.management">إدارة المستخدمين</span></h3>
+                    </header>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table id="users-table" class="data-table">
+                                <caption class="visually-hidden" data-i18n="users.tableCaption">جدول المستخدمين المسجلين في النظام</caption>
+                                <thead>
+                                    <tr>
+                                        <th scope="col">ID</th>
+                                        <th scope="col" data-i18n="table.username">اسم المستخدم</th>
+                                        <th scope="col" data-i18n="table.role">الدور</th>
+                                        <th scope="col" data-i18n="table.email">البريد</th>
+                                        <th scope="col" data-i18n="table.lastLogin">آخر دخول</th>
+                                        <th scope="col" data-i18n="table.status">الحالة</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Dynamic content -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </article>
+            </section>
+
+            <!-- Settings Page -->
+            <section id="settings-page" class="page" aria-labelledby="settings-title">
+                <h2 id="settings-title" class="visually-hidden" data-i18n="pages.settings">الإعدادات</h2>
+
+                <header class="page-header">
+                    <h2><i class="fas fa-cog" aria-hidden="true"></i> <span data-i18n="settings.title">الإعدادات</span></h2>
+                    <p data-i18n="settings.subtitle">تخصيص مظهر وسلوك النظام</p>
+                </header>
+
+                <div class="settings-grid">
+                    <!-- Appearance Settings -->
+                    <article class="card settings-card">
+                        <header class="card-header">
+                            <h3><i class="fas fa-palette" aria-hidden="true"></i> <span data-i18n="settings.appearance">المظهر</span></h3>
+                        </header>
+                        <div class="card-body">
+                            <!-- Theme Toggle -->
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <span class="setting-label" data-i18n="settings.theme">الوضع</span>
+                                    <span class="setting-desc" data-i18n="settings.themeDesc">اختر بين الوضع الفاتح والداكن</span>
+                                </div>
+                                <div class="theme-toggle-wrapper">
+                                    <button class="theme-btn active" data-theme="light" onclick="setTheme('light')">
+                                        <i class="fas fa-sun"></i>
+                                        <span data-i18n="settings.light">فاتح</span>
+                                    </button>
+                                    <button class="theme-btn" data-theme="dark" onclick="setTheme('dark')">
+                                        <i class="fas fa-moon"></i>
+                                        <span data-i18n="settings.dark">داكن</span>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Primary Color -->
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <span class="setting-label" data-i18n="settings.primaryColor">اللون الرئيسي</span>
+                                    <span class="setting-desc" data-i18n="settings.colorDesc">اختر اللون المفضل للواجهة</span>
+                                </div>
+                                <div class="color-picker">
+                                    <button class="color-btn active" data-color="blue" style="--color: #2563eb;" onclick="setPrimaryColor('blue')" title="أزرق"></button>
+                                    <button class="color-btn" data-color="purple" style="--color: #7c3aed;" onclick="setPrimaryColor('purple')" title="بنفسجي"></button>
+                                    <button class="color-btn" data-color="green" style="--color: #059669;" onclick="setPrimaryColor('green')" title="أخضر"></button>
+                                    <button class="color-btn" data-color="orange" style="--color: #ea580c;" onclick="setPrimaryColor('orange')" title="برتقالي"></button>
+                                    <button class="color-btn" data-color="red" style="--color: #dc2626;" onclick="setPrimaryColor('red')" title="أحمر"></button>
+                                </div>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- Language Settings -->
+                    <article class="card settings-card">
+                        <header class="card-header">
+                            <h3><i class="fas fa-language" aria-hidden="true"></i> <span data-i18n="settings.language">اللغة</span></h3>
+                        </header>
+                        <div class="card-body">
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <span class="setting-label" data-i18n="settings.selectLanguage">اختر اللغة</span>
+                                    <span class="setting-desc" data-i18n="settings.languageDesc">تغيير لغة واجهة المستخدم</span>
+                                </div>
+                                <div class="language-selector">
+                                    <button class="lang-btn active" data-lang="ar" onclick="setLanguage('ar')">
+                                        <span class="lang-flag">🇸🇦</span>
+                                        <span>العربية</span>
+                                    </button>
+                                    <button class="lang-btn" data-lang="en" onclick="setLanguage('en')">
+                                        <span class="lang-flag">🇬🇧</span>
+                                        <span>English</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- Notifications Settings -->
+                    <article class="card settings-card">
+                        <header class="card-header">
+                            <h3><i class="fas fa-bell" aria-hidden="true"></i> <span data-i18n="settings.notifications">الإشعارات</span></h3>
+                        </header>
+                        <div class="card-body">
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <span class="setting-label" data-i18n="settings.enableNotifications">تفعيل الإشعارات</span>
+                                    <span class="setting-desc" data-i18n="settings.notificationsDesc">استلام تنبيهات عند حدوث أحداث مهمة</span>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="notifications-toggle" checked onchange="toggleNotifications()">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <span class="setting-label" data-i18n="settings.soundAlerts">التنبيهات الصوتية</span>
+                                    <span class="setting-desc" data-i18n="settings.soundDesc">تشغيل صوت عند وصول إشعار</span>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="sound-toggle" onchange="toggleSound()">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- System Settings -->
+                    <article class="card settings-card">
+                        <header class="card-header">
+                            <h3><i class="fas fa-sliders-h" aria-hidden="true"></i> <span data-i18n="settings.system">النظام</span></h3>
+                        </header>
+                        <div class="card-body">
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <span class="setting-label" data-i18n="settings.autoRefresh">التحديث التلقائي</span>
+                                    <span class="setting-desc" data-i18n="settings.autoRefreshDesc">تحديث البيانات تلقائياً كل فترة</span>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="auto-refresh-toggle" checked onchange="toggleAutoRefreshGlobal()">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <span class="setting-label" data-i18n="settings.refreshInterval">فترة التحديث</span>
+                                </div>
+                                <select class="form-control" id="refresh-interval" onchange="setRefreshInterval(this.value)">
+                                    <option value="5000">5 <span data-i18n="settings.seconds">ثواني</span></option>
+                                    <option value="10000" selected>10 <span data-i18n="settings.seconds">ثواني</span></option>
+                                    <option value="30000">30 <span data-i18n="settings.seconds">ثانية</span></option>
+                                    <option value="60000">1 <span data-i18n="settings.minute">دقيقة</span></option>
+                                </select>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+
+                <!-- Reset Settings -->
+                <div class="settings-actions">
+                    <button class="btn btn-secondary" onclick="exportSettings()">
+                        <i class="fas fa-download"></i> <span data-i18n="settings.export">تصدير الإعدادات</span>
+                    </button>
+                    <button class="btn btn-secondary" onclick="importSettings()">
+                        <i class="fas fa-upload"></i> <span data-i18n="settings.import">استيراد الإعدادات</span>
+                    </button>
+                    <button class="btn btn-danger" onclick="resetSettings()">
+                        <i class="fas fa-undo"></i> <span data-i18n="settings.reset">إعادة تعيين الإعدادات</span>
+                    </button>
+                </div>
+            </section>
+
+            <!-- About Page -->
+            <section id="about-page" class="page" aria-labelledby="about-title">
+                <h2 id="about-title" class="visually-hidden" data-i18n="pages.about">عن النظام</h2>
+
+                <div class="about-container">
+                    <div class="about-logo">
+                        <div class="logo-icon">
+                            <i class="fas fa-network-wired"></i>
+                        </div>
+                        <h1>SIM-NET Dashboard</h1>
+                        <span class="version-badge">v2.0.0</span>
+                    </div>
+
+                    <div class="about-grid">
+                        <article class="card about-card">
+                            <header class="card-header">
+                                <h3><i class="fas fa-info-circle" aria-hidden="true"></i> <span data-i18n="about.systemInfo">معلومات النظام</span></h3>
+                            </header>
+                            <div class="card-body">
+                                <div class="about-info-list">
+                                    <div class="about-info-item">
+                                        <span class="info-label" data-i18n="about.systemName">اسم النظام:</span>
+                                        <span class="info-value">SIM-NET Dashboard</span>
+                                    </div>
+                                    <div class="about-info-item">
+                                        <span class="info-label" data-i18n="about.version">الإصدار:</span>
+                                        <span class="info-value">2.0.0</span>
+                                    </div>
+                                    <div class="about-info-item">
+                                        <span class="info-label" data-i18n="about.developer">المطور:</span>
+                                        <span class="info-value">SIM-NET Team</span>
+                                    </div>
+                                    <div class="about-info-item">
+                                        <span class="info-label" data-i18n="about.license">الترخيص:</span>
+                                        <span class="info-value">MIT License</span>
+                                    </div>
+                                    <div class="about-info-item">
+                                        <span class="info-label" data-i18n="about.releaseDate">تاريخ الإصدار:</span>
+                                        <span class="info-value">2026-02-25</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </article>
+
+                        <article class="card about-card university-card">
+<!--    <header class="card-header">-->
+<!--        <h3><i class="fas fa-university" style="color: #1e40af;" aria-hidden="true"></i>-->
+<!--&lt;!&ndash;        <span data-i18n="about.university">الجهة المسؤولة</span></h3>&ndash;&gt;-->
+<!--    </header>-->
+    <div class="card-body">
+        <div class="university-section">
+            <div class="university-logo">
+                <img src="images/dtu-logo.png" alt="جامعة الدلتا التكنولوجية - Delta Technological University"
+                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                <div class="logo-fallback" style="display: none;">
+                    <div class="dtu-icon">
+                        <span class="dtu-arabic">DTU</span>
+                    </div>
+                </div>
+            </div>
+            <div class="university-info">
+                <h4 class="university-name-ar">جامعة الدلتا التكنولوجية</h4>
+                <h5 class="university-name-en">Delta Technological University</h5>
+                <p class="university-location"><i class="fas fa-map-marker-alt"></i> مصر</p>
+            </div>
+        </div>
+    </div>
+</article>
+
+                       <article class="card about-card">
+    <header class="card-header">
+        <h3><i class="fas fa-envelope" aria-hidden="true"></i> <span data-i18n="about.contact">تواصل معنا</span></h3>
+    </header>
+    <div class="card-body">
+        <div class="contact-links">
+
+            <a href="https://mail.google.com/mail/u/0/#inbox" target="_blank" rel="noopener noreferrer" class="contact-link">
+                <i class="fab fa-google"></i>
+                <span>Gmail</span>
+            </a>
+            <a href="https://www.facebook.com/profile.php?id=100061136105889&locale=ar_AR" target="_blank" rel="noopener noreferrer" class="contact-link">
+                <i class="fab fa-facebook"></i>
+                <span>Facebook</span>
+            </a>
+            <a href="https://www.linkedin.com/in/ahmed-mohammed-wajiha-731980264" target="_blank" rel="noopener noreferrer" class="contact-link">
+                <i class="fab fa-linkedin"></i>
+                <span>LinkedIn</span>
+            </a>
+
+        </div>
+    </div>
+</article>
+
+                        <article class="card about-card">
+<!--                            <header class="card-header">-->
+<!--                                <h3><i class="fas fa-heart" aria-hidden="true"></i> <span data-i18n="about.thanks">شكر خاص</span></h3>-->
+<!--                            </header>-->
+                            <div class="card-body">
+                                <p data-i18n="about.thanksText">نشكر جميع المساهمين والمستخدمين على دعمهم المستمر لتطوير هذا النظام.</p>
+                                <div class="contribute-btn">
+<!--                                    <button class="btn btn-primary" onclick="window.open('#', '_blank')">-->
+                                    <div class="team-member leader">
+                <div class="member-avatar">
+                    <i class="fas fa-crown"></i>
+                </div>
+                                         <span class="member-name"> Eng:Marem</span>
+                                         <span class="member-role">(Supervisor)</span>
+<!--                                    </button>-->
+</div>
+
+                                </div>
+                            </div>
+                        </article>
+
+                        <article class="card about-card team-card">
+    <header class="card-header">
+        <h3><i class="fas fa-heart" aria-hidden="true"></i> <span data-i18n="about.thanks">فريق العمل </span></h3>
+    </header>
+    <div class="card-body">
+        <div class="team-grid">
+            <div class="team-member leader">
+                <div class="member-avatar">
+                    <i class="fas fa-crown"></i>
+                </div>
+                <span class="member-name">أحمد محمد</span>
+                <span class="member-role">(اليدر)</span>
+            </div>
+            <div class="team-member">
+                <div class="member-avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <span class="member-name">احمد محمود</span>
+            </div>
+            <div class="team-member">
+                <div class="member-avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <span class="member-name">احمد جابر</span>
+            </div>
+            <div class="team-member">
+                <div class="member-avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <span class="member-name">احمد عادل</span>
+            </div>
+            <div class="team-member">
+                <div class="member-avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <span class="member-name">السيد</span>
+            </div>
+            <div class="team-member">
+                <div class="member-avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <span class="member-name">ابو القاسم</span>
+            </div>
+            <div class="team-member">
+                <div class="member-avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <span class="member-name">يوسف جوبا</span>
+            </div>
+            <div class="team-member">
+                <div class="member-avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <span class="member-name">يوسف مختار</span>
+            </div>
+            <div class="team-member">
+                <div class="member-avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <span class="member-name">اسماء علاء</span>
+            </div>
+            <div class="team-member">
+                <div class="member-avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <span class="member-name">ياسمين ايهاب</span>
+            </div>
+            <div class="team-member">
+                <div class="member-avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <span class="member-name">مني محمد</span>
+            </div>
+            <div class="team-member">
+                <div class="member-avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <span class="member-name">مريم محمد</span>
+            </div>
+        </div>
+    </div>
+</article>
+                    </div>
+
+                    <div class="about-footer">
+                        <p>© 2026 SIM-NET Team. <span data-i18n="about.allRightsReserved">جميع الحقوق محفوظة.</span></p>
+                        <p class="made-with"><i class="fas fa-heart" style="color: #ef4444;"></i> <span data-i18n="about.madeWith">صنع بحب في مصر</span></p>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Modals -->
+    <!-- Add Device Modal -->
+<!--    <dialog id="add-device-modal" class="modal" aria-labelledby="add-device-title" aria-modal="true">-->
+<!--        <div class="modal-content">-->
+<!--            <header class="modal-header">-->
+<!--                <h3 id="add-device-title"><i class="fas fa-plus" aria-hidden="true"></i> <span data-i18n="modals.addDevice">إضافة جهاز جديد</span></h3>-->
+<!--                <button class="modal-close" aria-label="إغلاق النافذة">&times;</button>-->
+<!--            </header>-->
+<!--            <form id="add-device-form" method="dialog">-->
+<!--                <div class="modal-body">-->
+<!--                    <div class="form-row">-->
+<!--                        <div class="form-group">-->
+<!--                            <label for="device-ip" data-i18n="labels.ipAddress">عنوان IP</label>-->
+<!--                            <input type="text" id="device-ip" name="ip_address" placeholder="192.168.1.1" required pattern="^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$">-->
+<!--                        </div>-->
+<!--                        <div class="form-group">-->
+<!--                            <label for="device-hostname" data-i18n="labels.hostname">الاسم (Hostname)</label>-->
+<!--                            <input type="text" id="device-hostname" name="hostname" placeholder="Router-01" required>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                    <div class="form-row">-->
+<!--                        <div class="form-group">-->
+<!--                            <label for="device-type" data-i18n="labels.deviceType">نوع الجهاز</label>-->
+<!--                            <select id="device-type" name="device_type" required>-->
+<!--                                <option value="Router">Router</option>-->
+<!--                                <option value="Switch">Switch</option>-->
+<!--                                <option value="Server">Server</option>-->
+<!--                                <option value="Firewall">Firewall</option>-->
+<!--                            </select>-->
+<!--                        </div>-->
+<!--                        <div class="form-group">-->
+<!--                            <label for="device-vendor" data-i18n="labels.vendor">الشركة المصنعة</label>-->
+<!--                            <select id="device-vendor" name="vendor">-->
+<!--                                <option value="Cisco">Cisco</option>-->
+<!--                                <option value="Juniper">Juniper</option>-->
+<!--                                <option value="HP">HP</option>-->
+<!--                                <option value="Huawei">Huawei</option>-->
+<!--                                <option value="Other" data-i18n="labels.other">أخرى</option>-->
+<!--                            </select>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                    <div class="form-row">-->
+<!--                        <div class="form-group">-->
+<!--                            <label for="device-username" data-i18n="labels.username">اسم المستخدم</label>-->
+<!--                            <input type="text" id="device-username" name="username" placeholder="admin" autocomplete="off">-->
+<!--                        </div>-->
+<!--                        <div class="form-group">-->
+<!--                            <label for="device-password" data-i18n="labels.password">كلمة المرور</label>-->
+<!--                            <input type="password" id="device-password" name="password" placeholder="••••••" autocomplete="new-password">-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                    <div class="form-group">-->
+<!--                        <label for="device-location" data-i18n="labels.location">الموقع</label>-->
+<!--                        <input type="text" id="device-location" name="location" placeholder="Main Office - Floor 2">-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--                <footer class="modal-footer">-->
+<!--                    <button type="button" class="btn btn-secondary modal-cancel" data-i18n="buttons.cancel">إلغاء</button>-->
+<!--                    <button type="submit" class="btn btn-primary" data-i18n="buttons.save">حفظ</button>-->
+<!--                </footer>-->
+<!--            </form>-->
+<!--        </div>-->
+<!--    </dialog>-->
+
+    <!-- Add User Modal -->
+    <dialog id="add-user-modal" class="modal" aria-labelledby="add-user-title" aria-modal="true">
+        <div class="modal-content">
+            <header class="modal-header">
+                <h3 id="add-user-title"><i class="fas fa-user-plus" aria-hidden="true"></i> <span data-i18n="modals.addUser">إضافة مستخدم جديد</span></h3>
+                <button class="modal-close" aria-label="إغلاق النافذة">&times;</button>
+            </header>
+            <form id="add-user-form" method="dialog">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="new-username" data-i18n="labels.username">اسم المستخدم</label>
+                        <input type="text" id="new-username" name="username" required autocomplete="off">
+                    </div>
+                    <div class="form-group">
+                        <label for="new-password" data-i18n="labels.password">كلمة المرور</label>
+                        <input type="password" id="new-password" name="password" required autocomplete="new-password">
+                    </div>
+                    <div class="form-group">
+                        <label for="new-role" data-i18n="labels.role">الدور</label>
+                        <select id="new-role" name="role" required>
+                            <option value="viewer" data-i18n="roles.viewer">Viewer - مشاهدة فقط</option>
+                            <option value="engineer" data-i18n="roles.engineer">Engineer - مهندس</option>
+                            <option value="admin" data-i18n="roles.admin">Admin - مدير</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="new-email" data-i18n="labels.email">البريد الإلكتروني</label>
+                        <input type="email" id="new-email" name="email" autocomplete="email">
+                    </div>
+                </div>
+                <footer class="modal-footer">
+                    <button type="button" class="btn btn-secondary modal-cancel" data-i18n="buttons.cancel">إلغاء</button>
+                    <button type="submit" class="btn btn-primary" data-i18n="buttons.save">حفظ</button>
+                </footer>
+            </form>
+        </div>
+    </dialog>
+
+    <!-- Security Solution Modal -->
+    <dialog id="security-solution-modal" class="modal" aria-labelledby="solution-title" aria-modal="true">
+        <div class="modal-content">
+            <header class="modal-header">
+                <h3 id="solution-title"><i class="fas fa-first-aid" aria-hidden="true"></i> <span data-i18n="modals.solution">حل فوري</span></h3>
+                <button class="modal-close" aria-label="إغلاق النافذة">&times;</button>
+            </header>
+            <div class="modal-body">
+                <div id="security-issue-details"></div>
+                <div id="immediate-solution" class="solution-box"></div>
+            </div>
+            <footer class="modal-footer">
+                <button type="button" class="btn btn-secondary modal-cancel" data-i18n="buttons.close">إغلاق</button>
+                <button type="button" id="apply-solution-btn" class="btn btn-success">
+                    <i class="fas fa-check" aria-hidden="true"></i> <span data-i18n="buttons.applySolution">تطبيق الحل</span>
+                </button>
+            </footer>
+        </div>
+    </dialog>
+
+    <!-- Stats Detail Modals -->
+    <dialog id="total-devices-modal" class="modal stats-modal" aria-labelledby="total-devices-title">
+        <div class="modal-content">
+            <header class="modal-header">
+                <h3 id="total-devices-title"><i class="fas fa-server"></i> <span data-i18n="stats.totalDevices">إجمالي الأجهزة</span></h3>
+                <button class="modal-close" onclick="closeStatsModal('total-devices-modal')">&times;</button>
+            </header>
+            <div class="modal-body">
+                <div class="stats-detail-grid">
+                    <div class="stat-detail-item">
+                        <i class="fas fa-router text-primary"></i>
+                        <div>
+                            <span class="stat-number" id="modal-router-count">0</span>
+                            <span class="stat-label" data-i18n="deviceTypes.router">راوتر</span>
+                        </div>
+                    </div>
+                    <div class="stat-detail-item">
+                        <i class="fas fa-network-wired text-success"></i>
+                        <div>
+                            <span class="stat-number" id="modal-switch-count">0</span>
+                            <span class="stat-label" data-i18n="deviceTypes.switch">سويتش</span>
+                        </div>
+                    </div>
+                    <div class="stat-detail-item">
+                        <i class="fas fa-hdd text-warning"></i>
+                        <div>
+                            <span class="stat-number" id="modal-server-count">0</span>
+                            <span class="stat-label" data-i18n="deviceTypes.server">سيرفر</span>
+                        </div>
+                    </div>
+                    <div class="stat-detail-item">
+                        <i class="fas fa-shield-alt text-danger"></i>
+                        <div>
+                            <span class="stat-number" id="modal-firewall-count">0</span>
+                            <span class="stat-label" data-i18n="deviceTypes.firewall">جدار حماية</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="devices-list-preview" id="all-devices-list"></div>
+            </div>
+        </div>
+    </dialog>
+
+    <dialog id="online-devices-modal" class="modal stats-modal" aria-labelledby="online-devices-title">
+        <div class="modal-content">
+            <header class="modal-header">
+                <h3 id="online-devices-title"><i class="fas fa-check-circle text-success"></i> <span data-i18n="stats.onlineDevices">الأجهزة المتصلة</span></h3>
+                <button class="modal-close" onclick="closeStatsModal('online-devices-modal')">&times;</button>
+            </header>
+            <div class="modal-body">
+                <div class="online-status-header">
+                    <div class="pulse-indicator online"></div>
+                    <span data-i18n="monitoring.liveMonitoring">جاري المراقبة اللحظية</span>
+                </div>
+                <div class="devices-list-preview" id="online-devices-list"></div>
+            </div>
+        </div>
+    </dialog>
+
+    <dialog id="offline-devices-modal" class="modal stats-modal" aria-labelledby="offline-devices-title">
+        <div class="modal-content">
+            <header class="modal-header">
+                <h3 id="offline-devices-title"><i class="fas fa-times-circle text-danger"></i> <span data-i18n="stats.offlineDevices">الأجهزة غير المتصلة</span></h3>
+                <button class="modal-close" onclick="closeStatsModal('offline-devices-modal')">&times;</button>
+            </header>
+            <div class="modal-body">
+                <div class="offline-status-header">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <span data-i18n="monitoring.needAttention">تحتاج إلى اهتمام فوري</span>
+                </div>
+                <div class="devices-list-preview" id="offline-devices-list"></div>
+            </div>
+        </div>
+    </dialog>
+
+    <dialog id="security-alerts-modal" class="modal stats-modal" aria-labelledby="security-alerts-title">
+        <div class="modal-content">
+            <header class="modal-header">
+                <h3 id="security-alerts-title"><i class="fas fa-shield-alt text-warning"></i> <span data-i18n="stats.securityAlerts">تنبيهات الأمان</span></h3>
+                <button class="modal-close" onclick="closeStatsModal('security-alerts-modal')">&times;</button>
+            </header>
+            <div class="modal-body">
+                <div class="alerts-summary">
+                    <div class="alert-count-item critical">
+                        <span class="count" id="critical-alerts-count">0</span>
+                        <span class="label" data-i18n="severity.critical">حرجة</span>
+                    </div>
+                    <div class="alert-count-item high">
+                        <span class="count" id="high-alerts-count">0</span>
+                        <span class="label" data-i18n="severity.high">عالية</span>
+                    </div>
+                    <div class="alert-count-item medium">
+                        <span class="count" id="medium-alerts-count">0</span>
+                        <span class="label" data-i18n="severity.medium">متوسطة</span>
+                    </div>
+                </div>
+                <div class="alerts-list-preview" id="security-alerts-list"></div>
+            </div>
+        </div>
+    </dialog>
+
+    <!-- Security Stats Details Modal -->
+    <dialog id="security-stats-modal" class="modal" aria-labelledby="security-stats-title" aria-modal="true">
+        <div class="modal-content" style="max-width: 700px; max-height: 80vh;">
+            <header class="modal-header">
+                <h3 id="security-stats-title" style="display: flex; align-items: center; gap: 10px;">
+                    <span id="stats-modal-title">التفاصيل</span>
+                </h3>
+                <button class="modal-close" onclick="closeSecurityStatsModal()" aria-label="إغلاق النافذة">&times;</button>
+            </header>
+            <div class="modal-body" style="max-height: 60vh; overflow-y: auto;">
+                <div id="stats-details-content"></div>
+            </div>
+            <footer class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeSecurityStatsModal()" data-i18n="buttons.close">إغلاق</button>
+            </footer>
+        </div>
+    </dialog>
+
+    <!-- Toast Container -->
+    <div id="toast-container" class="toast-container" aria-live="polite" aria-atomic="true"></div>
+
+    <!-- Application Scripts -->
+    <script src="js/app.js" defer></script>
+</body>
+</html>
